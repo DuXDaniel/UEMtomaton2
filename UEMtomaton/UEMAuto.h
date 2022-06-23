@@ -27,7 +27,6 @@
 #include "WriteSII.h"
 #include "WriteSettings.h"
 #include "WindowFinder.h"
-#include "Soloist.h"
 
 /* -------------------------------GLOBAL VARIABLE DECLARATIONS-------------------------------------- */
 
@@ -82,11 +81,6 @@ char units[2]; // the units used to designate the file names and .ULG data
 // Tracks the time
 time_t my_time;
 
-// Handles to all the connected Soloists
-SoloistHandle* handles;
-// Handle to give access to Soloist
-SoloistHandle handle = NULL;
-DWORD handleCount = 0;
 DOUBLE positionFeedback;
 
 // Declaring a namespace and all constructor methods
@@ -125,7 +119,6 @@ namespace UEMtomaton {
 			delayConnected = 0;
 
 			std::string acqTimeZero;
-			std::string acqSpeed;
 			std::string acqIP;
 
 			std::ifstream OpenFile;
@@ -150,19 +143,12 @@ namespace UEMtomaton {
 					}
 					else if (curLine == 1)
 					{
-						acqSpeed = line;
-						curLine = 2;
-					}
-					else if (curLine == 2)
-					{
 						acqIP = line;
 					}
 
 				} while (!OpenFile.eof());
 
 				curZero = std::stod(acqTimeZero);
-				this->delaySpeedSetting->Text = gcnew String(acqSpeed.c_str());
-				this->delaySpd->Text = this->delaySpeedSetting->Text;
 				this->DelayIPSetting->Text = gcnew String(acqIP.c_str());
 				this->servIP->Text = this->DelayIPSetting->Text;
 
@@ -170,10 +156,8 @@ namespace UEMtomaton {
 			else
 			{
 
-				curZero = 293.527; /// mm
+				curZero = 300; /// mm
 
-				this->delaySpeedSetting->Text = gcnew String("50");
-				this->delaySpd->Text = this->delaySpeedSetting->Text;
 				this->DelayIPSetting->Text = gcnew String("192.168.0.3");
 				this->servIP->Text = this->DelayIPSetting->Text;
 
@@ -215,14 +199,14 @@ namespace UEMtomaton {
 	private: System::Windows::Forms::GroupBox^ groupBox1;
 	private: System::Windows::Forms::Label^ delayPosTime;
 
-	private: System::Windows::Forms::Label^ label4;
-	private: System::Windows::Forms::TextBox^ delaySpd;
+
+
 
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Label^ label2;
-	private: System::Windows::Forms::Button^ delayMovFor;
 
-	private: System::Windows::Forms::Button^ delayMovBack;
+
+
 	private: System::Windows::Forms::Label^ delayPosDist;
 
 	private: System::Windows::Forms::Label^ label8;
@@ -440,12 +424,8 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->label7 = (gcnew System::Windows::Forms::Label());
 			this->delayPosDist = (gcnew System::Windows::Forms::Label());
 			this->delayPosTime = (gcnew System::Windows::Forms::Label());
-			this->label4 = (gcnew System::Windows::Forms::Label());
-			this->delaySpd = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->delayMovFor = (gcnew System::Windows::Forms::Button());
-			this->delayMovBack = (gcnew System::Windows::Forms::Button());
 			this->ServInitButton = (gcnew System::Windows::Forms::Button());
 			this->tabPage3 = (gcnew System::Windows::Forms::TabPage());
 			this->SII_status_box = (gcnew System::Windows::Forms::TextBox());
@@ -469,6 +449,9 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->label13 = (gcnew System::Windows::Forms::Label());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->selectiveInSituIndex = (gcnew System::Windows::Forms::TextBox());
+			this->label26 = (gcnew System::Windows::Forms::Label());
+			this->scanScriptIndex = (gcnew System::Windows::Forms::TextBox());
 			this->label25 = (gcnew System::Windows::Forms::Label());
 			this->customMenuIndex = (gcnew System::Windows::Forms::TextBox());
 			this->label24 = (gcnew System::Windows::Forms::Label());
@@ -491,9 +474,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->cameraRunner = (gcnew System::ComponentModel::BackgroundWorker());
 			this->delayValueUpdater = (gcnew System::ComponentModel::BackgroundWorker());
 			this->versionNumber = (gcnew System::Windows::Forms::Label());
-			this->scanScriptIndex = (gcnew System::Windows::Forms::TextBox());
-			this->label26 = (gcnew System::Windows::Forms::Label());
-			this->selectiveInSituIndex = (gcnew System::Windows::Forms::TextBox());
 			this->cameraTab->SuspendLayout();
 			this->tabPage2->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->DataReadouts))->BeginInit();
@@ -1064,17 +1044,13 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->groupBox1->Controls->Add(this->label7);
 			this->groupBox1->Controls->Add(this->delayPosDist);
 			this->groupBox1->Controls->Add(this->delayPosTime);
-			this->groupBox1->Controls->Add(this->label4);
-			this->groupBox1->Controls->Add(this->delaySpd);
 			this->groupBox1->Controls->Add(this->label3);
 			this->groupBox1->Controls->Add(this->label2);
-			this->groupBox1->Controls->Add(this->delayMovFor);
-			this->groupBox1->Controls->Add(this->delayMovBack);
-			this->groupBox1->Location = System::Drawing::Point(396, 152);
+			this->groupBox1->Location = System::Drawing::Point(407, 277);
 			this->groupBox1->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Padding = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->groupBox1->Size = System::Drawing::Size(392, 334);
+			this->groupBox1->Size = System::Drawing::Size(392, 159);
 			this->groupBox1->TabIndex = 2;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Manual Delay Stage Control";
@@ -1102,7 +1078,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// delayPosDist
 			// 
 			this->delayPosDist->AutoSize = true;
-			this->delayPosDist->Location = System::Drawing::Point(146, 291);
+			this->delayPosDist->Location = System::Drawing::Point(141, 122);
 			this->delayPosDist->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
 			this->delayPosDist->Name = L"delayPosDist";
 			this->delayPosDist->Size = System::Drawing::Size(36, 20);
@@ -1112,36 +1088,17 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// delayPosTime
 			// 
 			this->delayPosTime->AutoSize = true;
-			this->delayPosTime->Location = System::Drawing::Point(146, 251);
+			this->delayPosTime->Location = System::Drawing::Point(141, 82);
 			this->delayPosTime->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
 			this->delayPosTime->Name = L"delayPosTime";
 			this->delayPosTime->Size = System::Drawing::Size(36, 20);
 			this->delayPosTime->TabIndex = 8;
 			this->delayPosTime->Text = L"000";
 			// 
-			// label4
-			// 
-			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(28, 211);
-			this->label4->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
-			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(60, 20);
-			this->label4->TabIndex = 7;
-			this->label4->Text = L"Speed:";
-			// 
-			// delaySpd
-			// 
-			this->delaySpd->Location = System::Drawing::Point(99, 205);
-			this->delaySpd->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->delaySpd->Name = L"delaySpd";
-			this->delaySpd->Size = System::Drawing::Size(52, 26);
-			this->delaySpd->TabIndex = 6;
-			this->delaySpd->Text = L"50";
-			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(28, 291);
+			this->label3->Location = System::Drawing::Point(23, 122);
 			this->label3->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(109, 20);
@@ -1151,36 +1108,12 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(28, 251);
+			this->label2->Location = System::Drawing::Point(23, 82);
 			this->label2->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(100, 20);
 			this->label2->TabIndex = 3;
 			this->label2->Text = L"Position (ps):";
-			// 
-			// delayMovFor
-			// 
-			this->delayMovFor->Location = System::Drawing::Point(202, 78);
-			this->delayMovFor->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->delayMovFor->Name = L"delayMovFor";
-			this->delayMovFor->Size = System::Drawing::Size(162, 112);
-			this->delayMovFor->TabIndex = 1;
-			this->delayMovFor->Text = L">";
-			this->delayMovFor->UseVisualStyleBackColor = true;
-			this->delayMovFor->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &UEMAuto::DelayMovFor_Click);
-			this->delayMovFor->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &UEMAuto::DelayMovFor_Unclick);
-			// 
-			// delayMovBack
-			// 
-			this->delayMovBack->Location = System::Drawing::Point(32, 78);
-			this->delayMovBack->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->delayMovBack->Name = L"delayMovBack";
-			this->delayMovBack->Size = System::Drawing::Size(162, 112);
-			this->delayMovBack->TabIndex = 0;
-			this->delayMovBack->Text = L"<";
-			this->delayMovBack->UseVisualStyleBackColor = true;
-			this->delayMovBack->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &UEMAuto::DelayMovBack_Click);
-			this->delayMovBack->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &UEMAuto::DelayMovBack_Unclick);
 			// 
 			// ServInitButton
 			// 
@@ -1456,6 +1389,36 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Script Locations";
 			// 
+			// selectiveInSituIndex
+			// 
+			this->selectiveInSituIndex->Location = System::Drawing::Point(332, 112);
+			this->selectiveInSituIndex->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
+			this->selectiveInSituIndex->Name = L"selectiveInSituIndex";
+			this->selectiveInSituIndex->Size = System::Drawing::Size(69, 26);
+			this->selectiveInSituIndex->TabIndex = 11;
+			this->selectiveInSituIndex->Text = L"4";
+			this->selectiveInSituIndex->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			// 
+			// label26
+			// 
+			this->label26->AutoSize = true;
+			this->label26->Location = System::Drawing::Point(9, 118);
+			this->label26->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+			this->label26->Name = L"label26";
+			this->label26->Size = System::Drawing::Size(207, 20);
+			this->label26->TabIndex = 10;
+			this->label26->Text = L"Selective InSitu Script Index";
+			// 
+			// scanScriptIndex
+			// 
+			this->scanScriptIndex->Location = System::Drawing::Point(332, 71);
+			this->scanScriptIndex->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
+			this->scanScriptIndex->Name = L"scanScriptIndex";
+			this->scanScriptIndex->Size = System::Drawing::Size(69, 26);
+			this->scanScriptIndex->TabIndex = 9;
+			this->scanScriptIndex->Text = L"2";
+			this->scanScriptIndex->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			// 
 			// label25
 			// 
 			this->label25->AutoSize = true;
@@ -1576,17 +1539,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->label15->TabIndex = 5;
 			this->label15->Text = L"Default Speed:";
 			// 
-			// delaySpeedSetting
-			// 
-			this->delaySpeedSetting->Location = System::Drawing::Point(144, 29);
-			this->delaySpeedSetting->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->delaySpeedSetting->Name = L"delaySpeedSetting";
-			this->delaySpeedSetting->Size = System::Drawing::Size(52, 26);
-			this->delaySpeedSetting->TabIndex = 4;
-			this->delaySpeedSetting->Text = L"50";
-			this->delaySpeedSetting->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-			this->delaySpeedSetting->TextChanged += gcnew System::EventHandler(this, &UEMAuto::delaySpeedSetting_TextChanged);
-			// 
 			// CameraSettingsBox
 			// 
 			this->CameraSettingsBox->Controls->Add(this->label5);
@@ -1665,36 +1617,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->versionNumber->Size = System::Drawing::Size(89, 20);
 			this->versionNumber->TabIndex = 15;
 			this->versionNumber->Text = L"Version 1.5";
-			// 
-			// scanScriptIndex
-			// 
-			this->scanScriptIndex->Location = System::Drawing::Point(332, 71);
-			this->scanScriptIndex->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->scanScriptIndex->Name = L"scanScriptIndex";
-			this->scanScriptIndex->Size = System::Drawing::Size(69, 26);
-			this->scanScriptIndex->TabIndex = 9;
-			this->scanScriptIndex->Text = L"2";
-			this->scanScriptIndex->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-			// 
-			// label26
-			// 
-			this->label26->AutoSize = true;
-			this->label26->Location = System::Drawing::Point(9, 118);
-			this->label26->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
-			this->label26->Name = L"label26";
-			this->label26->Size = System::Drawing::Size(207, 20);
-			this->label26->TabIndex = 10;
-			this->label26->Text = L"Selective InSitu Script Index";
-			// 
-			// selectiveInSituIndex
-			// 
-			this->selectiveInSituIndex->Location = System::Drawing::Point(332, 112);
-			this->selectiveInSituIndex->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
-			this->selectiveInSituIndex->Name = L"selectiveInSituIndex";
-			this->selectiveInSituIndex->Size = System::Drawing::Size(69, 26);
-			this->selectiveInSituIndex->TabIndex = 11;
-			this->selectiveInSituIndex->Text = L"4";
-			this->selectiveInSituIndex->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// UEMAuto
 			// 
@@ -1792,33 +1714,13 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			
 			if (delayConnected == 0)
 			{
-				if (!SoloistConnect(&handles, &handleCount))
-				{
-					this->statusWindow->AppendText("No controllers found.\r\n");
-					cleanupSoloist();
-					cleanupSockets();
-					this->statusWindow->AppendText("Sockets closed.\r\n");
-					return;
-				}
-
-				if (handleCount != 1)
-				{
-					this->statusWindow->AppendText("Too many controllers.\r\n");
-					cleanupSoloist();
-					cleanupSockets();
-					this->statusWindow->AppendText("Sockets closed.\r\n");
-					return;
-				}
-				handle = handles[0];
-
-				if (!SoloistMotionEnable(handle))
-				{
-					this->statusWindow->AppendText("Motion cannot be enabled.\r\n");
-					cleanupSoloist();
-					cleanupSockets();
-					this->statusWindow->AppendText("Sockets closed.\r\n");
-					return;
-				}
+				// inject code here to connect the delay stage via IronPython script
+				// 
+				// Spawns the .exe
+				spawnl(P_NOWAIT, "DelayStageCommScript.exe", "DelayStageCommScript.exe", NULL);
+				// //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				// ipy script will auto-initialize awaiting orders and communicating its position via text files (no better way without coding some stupid socket solution or some other communications protocol between ipy and C++
+				delayConnected = 1;
 
 				this->scanRunner->RunWorkerAsync(); // run the scan-thread
 				this->delayValueUpdater->RunWorkerAsync();
@@ -1826,7 +1728,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			else
 			{
 				this->statusWindow->AppendText("Delay stage already connected.\r\n");
-				this->scanRunner->RunWorkerAsync(); // run the scan-thread
 			}
 
 			this->trackTime->RunWorkerAsync();
@@ -2108,10 +2009,16 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 
 			WSACleanup();
 
-			if (!SoloistDisconnect(handles))
-			{
-				printSoloistError();
-			}
+			// initialize a full disconnect in ironpython
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// Requires setting connect text file to "2"
+			std::ofstream OpenFile;
+
+			OpenFile.open("connectStatFile.txt");
+
+			OpenFile << "2";
+
+			OpenFile.close();
 
 			delayConnected = 0;
 
@@ -2191,7 +2098,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 				if (connectHealth == SOCKET_ERROR)
 				{
 					cleanupSockets();
-					cleanupSoloist();
+					cleanupDelay();
 					this->BeginInvoke(gcnew timeStopTrack(this, &UEMAuto::stopTrackTime));
 				}
 
@@ -2221,7 +2128,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 				if (connectHealth == SOCKET_ERROR)
 				{
 					cleanupSockets();
-					cleanupSoloist();
+					cleanupDelay();
 					this->BeginInvoke(gcnew timeStopTrack(this, &UEMAuto::stopTrackTime));
 				}
 
@@ -2269,7 +2176,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 				if (connectHealth == SOCKET_ERROR)
 				{
 					cleanupSockets();
-					cleanupSoloist();
+					cleanupDelay();
 					this->BeginInvoke(gcnew delStopComm(this, &UEMAuto::stopDelComm));
 				}
 
@@ -2666,7 +2573,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 						if (connectHealth == SOCKET_ERROR)
 						{
 							cleanupSockets();
-							cleanupSoloist();
+							cleanupDelay();
 							this->BeginInvoke(gcnew cameraRunnerStop(this, &UEMAuto::stopCameraRunner));
 						}
 
@@ -2677,7 +2584,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 						if (connectHealth == SOCKET_ERROR)
 						{
 							cleanupSockets();
-							cleanupSoloist();
+							cleanupDelay();
 							this->BeginInvoke(gcnew cameraRunnerStop(this, &UEMAuto::stopCameraRunner));
 						}
 						
@@ -2924,7 +2831,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			if (connectHealth == SOCKET_ERROR)
 			{
 				cleanupSockets();
-				cleanupSoloist();
+				cleanupDelay();
 				this->BeginInvoke(gcnew cameraRunnerStop(this, &UEMAuto::stopCameraRunner));
 			}
 
@@ -2965,6 +2872,11 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			char* delaydata;
 			int a;
 			double curDistPoint;
+			std::ifstream OpenFile;
+			std::string line;
+			std::string completionStatus;
+			int completionValue;
+			int curLine = 0;
 
 			while (true)
 			{
@@ -2977,7 +2889,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 				if (connectHealth == SOCKET_ERROR)
 				{
 					cleanupSockets();
-					cleanupSoloist();
+					cleanupDelay();
 					this->BeginInvoke(gcnew scanRunStop(this, &UEMAuto::stopScanRun));
 					this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String("scanRunner.\n"));
 				}
@@ -3020,24 +2932,38 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 					this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String(delaydata));
 					this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String(".\n"));
 
-					if (!SoloistMotionMoveAbs(handle, curDistPoint, std::stod(msclr::interop::marshal_as<std::string>(this->delaySpd->Text))))
-					{
-						cleanupSoloist();
-						this->BeginInvoke(gcnew scanRunStop(this, &UEMAuto::stopScanRun));
-						this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String("scanRunner.\n"));
-					}
-					else
-					{
-						if (!SoloistMotionWaitForMotionDone(handle, WAITOPTION_MoveDone, -1, NULL))
-						{
-							cleanupSoloist();
-							this->BeginInvoke(gcnew scanRunStop(this, &UEMAuto::stopScanRun));
-							this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String("scanRunner.\n"));
-						}
-					}
-					
-					System::Threading::Thread::Sleep(50);
+					// send movement order
+					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					// check for motion done status in text file
 
+					while (completionValue != 1)
+					{
+						OpenFile.open("movementCommFile.txt");
+						curLine = 0;
+						completionValue = 0;
+
+						if (OpenFile)
+						{
+
+							do
+							{
+
+								getline(OpenFile, line);
+
+								if (curLine == 1)
+								{
+									completionStatus = line;
+								}
+								curLine++;
+
+							} while (!OpenFile.eof());
+
+							completionValue = std::stod(completionStatus);
+						}
+						System::Threading::Thread::Sleep(5000);
+					}
+
+					System::Threading::Thread::Sleep(50);
 					cc_buffer[0] = '1\0';
 
 					connectHealth = send(camcomm_client, cc_buffer, sizeof(cc_buffer), 0);
@@ -3045,7 +2971,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 					if (connectHealth == SOCKET_ERROR)
 					{
 						cleanupSockets();
-						cleanupSoloist();
+						cleanupDelay();
 						this->BeginInvoke(gcnew scanRunStop(this, &UEMAuto::stopScanRun));
 						this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String("scanRunner.\n"));
 					}
@@ -3144,25 +3070,21 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 
 		}
 
-		private: System::Void printSoloistError()
+		private: System::Void cleanupDelay()
 		{
-			CHAR data[1024];
-			SoloistGetLastErrorString(data, 1024);
-			this->statusWindow->AppendText(gcnew String(data) + "\n");
-		}
+			this->statusWindow->AppendText("Cleaning up delay stage scripts.\n");
+			// Send signal to kill delay stage scripts and associated threads
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-		private: System::Void cleanupSoloist()
-		{
-			if (handleCount > 0) 
-			{
-				this->statusWindow->AppendText("Soloist error, disconnecting from delay stage.\n");
-				if (!SoloistDisconnect(handles)) 
-				{ 
-					printSoloistError(); 
-				}
+			std::ofstream OpenFile;
 
-				delayConnected = 0;
-			}
+			OpenFile.open("connectStatFile.txt");
+
+			OpenFile << "2";
+
+			OpenFile.close();
+			
+			delayConnected = 0;
 		}
 
 		/* BrowseFilePath_Click
@@ -3183,92 +3105,48 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 
 		}
 
-		/* DelayMovBack_Click
-			Moves the delay stage while the [backward] button is pressed
+		/* DelayValueUpdater_DoWork and associated delegate functions
+			Handles all the work for updating the delay stage value on the delay stage side.
+
+			delDistUpdater-distDelUpdater delegate pair: updates the position of the delay stage
+			delTimeUpdater-timeDelUpdater delegate pair: updates the time value
+			killDelUpdater-delKillUpdater delegate pair: kills the updater if there is an issue with Soloist
 		*/
-		private: System::Void DelayMovBack_Click(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+		delegate System::Void delDistUpdater();
+		System::Void distDelUpdater()
 		{
-
-			if (!SoloistMotionFreeRun(handle, -1 * std::stod(msclr::interop::marshal_as<std::string>(this->delaySpd->Text))))
-			{
-				SoloistMotionFreeRunStop(handle);
-				cleanupSoloist();
-			}
-
+			this->delayPosDist->Text = gcnew String(std::to_string(positionFeedback).c_str());
 		}
-
-			   /* DelayMovBack_Unclick
-				   Stops moving the delay stage when the mouse button on the [backward] button is released
-			   */
-		private: System::Void DelayMovBack_Unclick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+		delegate System::Void delTimeUpdater();
+		System::Void timeDelUpdater()
 		{
-
-			if (!SoloistMotionFreeRunStop(handle))
-			{
-				cleanupSoloist();
-			}
-
+			this->delayPosTime->Text = gcnew String(std::to_string(curdelTime).c_str());
 		}
-
-			   /* DelayMovFor_Click
-				   Moves the delay stage while the [forward] button is pressed
-			   */
-		private: System::Void DelayMovFor_Click(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+		delegate System::Void killDelUpdater();
+		System::Void delKillUpdater()
 		{
-
-			if (!SoloistMotionFreeRun(handle, std::stod(msclr::interop::marshal_as<std::string>(this->delaySpd->Text))))
-			{
-				SoloistMotionFreeRunStop(handle);
-				cleanupSoloist();
-			}
-
+			this->delayValueUpdater->CancelAsync();
 		}
-
-			   /* DelayMovFor_Unclick
-				   Stops moving the delay stage when the mouse button on the [forward] button is released
-			   */
-		private: System::Void DelayMovFor_Unclick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
-		{
-
-			if (!SoloistMotionFreeRunStop(handle))
-			{
-				cleanupSoloist();
-			}
-
-		}
-
-			   /* DelayValueUpdater_DoWork and associated delegate functions
-				   Handles all the work for updating the delay stage value on the delay stage side.
-
-				   delDistUpdater-distDelUpdater delegate pair: updates the position of the delay stage
-				   delTimeUpdater-timeDelUpdater delegate pair: updates the time value
-				   killDelUpdater-delKillUpdater delegate pair: kills the updater if there is an issue with Soloist
-			   */
-			   delegate System::Void delDistUpdater();
-			   System::Void distDelUpdater()
-			   {
-				   this->delayPosDist->Text = gcnew String(std::to_string(positionFeedback).c_str());
-			   }
-			   delegate System::Void delTimeUpdater();
-			   System::Void timeDelUpdater()
-			   {
-				   this->delayPosTime->Text = gcnew String(std::to_string(curdelTime).c_str());
-			   }
-			   delegate System::Void killDelUpdater();
-			   System::Void delKillUpdater()
-			   {
-				   this->delayValueUpdater->CancelAsync();
-			   }
 		private: System::Void DelayValueUpdater_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 		{
+			std::ifstream OpenFile;
+			std::string line;
 
 			while (true)
 			{
-				if (!SoloistStatusGetItem(handle, STATUSITEM_PositionFeedback, &positionFeedback))
+				OpenFile.open("positionFile.txt");
+
+				if (OpenFile)
 				{
+					getline(OpenFile, line);
+					positionFeedback = std::stod(line); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Watch for units!
+				}
+				else// find some way to error out!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				{
+					
 					this->BeginInvoke(gcnew killDelUpdater(this, &UEMAuto::delKillUpdater));
 					this->BeginInvoke(gcnew UpdateDelStatus(this, &UEMAuto::DelStatUpdater), gcnew String("delayValueUpdater.\n"));
-					cleanupSoloist();
+					cleanupDelay();
 				}
 				curdelTime = (positionFeedback - curZero) * mm_to_ps;
 				this->BeginInvoke(gcnew delDistUpdater(this, &UEMAuto::distDelUpdater));
@@ -3304,13 +3182,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 		{
 			
 			this->servIP->Text = this->DelayIPSetting->Text;
-
-		}
-
-		private: System::Void delaySpeedSetting_TextChanged(System::Object^ sender, System::EventArgs^ e) 
-		{
-
-			this->delaySpd->Text = this->delaySpeedSetting->Text;
 
 		}
 
@@ -3410,7 +3281,6 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 
 				curZero = std::stod(acqTimeZero);
 				this->delaySpeedSetting->Text = gcnew String(acqSpeed.c_str());
-				this->delaySpd->Text = this->delaySpeedSetting->Text;
 				this->DelayIPSetting->Text = gcnew String(acqIP.c_str());
 				this->servIP->Text = this->DelayIPSetting->Text;
 				this->customMenuIndex->Text = gcnew String(customIdx.c_str());
@@ -3433,10 +3303,8 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 		private: System::Void DefaultSettingsRestore_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 
-			curZero = 293.527; // mm
+			curZero = 300; // mm
 			this->timeZeroPositionSetting->Text = gcnew String(std::to_string(curZero).c_str());
-			this->delaySpeedSetting->Text = gcnew String("50");
-			this->delaySpd->Text = this->delaySpeedSetting->Text;
 			this->DelayIPSetting->Text = gcnew String("192.168.0.3");
 			this->servIP->Text = this->DelayIPSetting->Text;
 			this->customMenuIndex->Text = gcnew String("8");
@@ -3448,27 +3316,10 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 		private: System::Void delayConnect_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 
-			if (!SoloistConnect(&handles, &handleCount))
-			{
-				this->statusWindow->AppendText("No controllers found.\r\n");
-				cleanupSoloist();
-				return;
-			}
+			// Initialize IronPython!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			spawnl(P_NOWAIT, "DelayStageCommScript.exe", "DelayStageCommScript.exe", NULL);
 
-			if (handleCount != 1)
-			{
-				this->statusWindow->AppendText("Too many controllers.\r\n");
-				cleanupSoloist();
-				return;
-			}
-			handle = handles[0];
-
-			if (!SoloistMotionEnable(handle))
-			{
-				this->statusWindow->AppendText("Motion cannot be enabled.\r\n");
-				cleanupSoloist();
-				return;
-			}
+			// This is the camera side --> don't need to open IronPython when it's already started by the delay side.
 
 			this->delayValueUpdater->RunWorkerAsync();
 
