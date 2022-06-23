@@ -20,7 +20,7 @@ Parameters:
 
 */
 
-void WriteDMComm::WriteData(std::string FileName, std::string val1, std::string val2, std::string val3, std::string val4, std::string val5, std::string val6)
+void WriteDMComm::WriteData(std::string FileName, std::string val1, std::string val2, std::string val3, std::string val4, std::string val5, std::string val6, std::string val7)
 {
 
 	std::ofstream OpenFile;
@@ -32,7 +32,8 @@ void WriteDMComm::WriteData(std::string FileName, std::string val1, std::string 
 	OpenFile << val3 + ".ext\n0\n0\n0\n\0";
 	OpenFile << val4 + "\n\0";
 	OpenFile << val5 + "\n\0";
-	OpenFile << val6 + "\n0\n0\n\0";
+	OpenFile << val6 + "\n\0";
+	OpenFile << val7 + "\n0\n0\n\0";
 
 	OpenFile.close();
 

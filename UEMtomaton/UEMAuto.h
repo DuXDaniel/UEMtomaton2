@@ -346,6 +346,10 @@ private: System::Windows::Forms::Label^ label24;
 private: System::Windows::Forms::TextBox^ selectiveInSituIndex;
 private: System::Windows::Forms::Label^ label26;
 private: System::Windows::Forms::TextBox^ scanScriptIndex;
+private: System::Windows::Forms::TextBox^ acqTimeBox;
+
+
+private: System::Windows::Forms::Label^ label4;
 
 
 
@@ -367,11 +371,11 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 		/// Required method for Designer support
 		void InitializeComponent(void)
 		{
-			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle9 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle10 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(UEMAuto::typeid));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->BottomToolStripPanel = (gcnew System::Windows::Forms::ToolStripPanel());
@@ -381,6 +385,8 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->ContentPanel = (gcnew System::Windows::Forms::ToolStripContentPanel());
 			this->cameraTab = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
+			this->acqTimeBox = (gcnew System::Windows::Forms::TextBox());
+			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->RepeatBox = (gcnew System::Windows::Forms::TextBox());
 			this->RepeatLabel = (gcnew System::Windows::Forms::Label());
 			this->DataReadouts = (gcnew System::Windows::Forms::DataGridView());
@@ -551,6 +557,8 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// 
 			// tabPage2
 			// 
+			this->tabPage2->Controls->Add(this->acqTimeBox);
+			this->tabPage2->Controls->Add(this->label4);
 			this->tabPage2->Controls->Add(this->RepeatBox);
 			this->tabPage2->Controls->Add(this->RepeatLabel);
 			this->tabPage2->Controls->Add(this->DataReadouts);
@@ -589,6 +597,25 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->tabPage2->Text = L"Camera Side";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
+			// acqTimeBox
+			// 
+			this->acqTimeBox->Location = System::Drawing::Point(397, 184);
+			this->acqTimeBox->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
+			this->acqTimeBox->Name = L"acqTimeBox";
+			this->acqTimeBox->Size = System::Drawing::Size(50, 26);
+			this->acqTimeBox->TabIndex = 26;
+			this->acqTimeBox->Text = L"0";
+			// 
+			// label4
+			// 
+			this->label4->AutoSize = true;
+			this->label4->Location = System::Drawing::Point(287, 187);
+			this->label4->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(112, 20);
+			this->label4->TabIndex = 25;
+			this->label4->Text = L"Acquisition (s):";
+			// 
 			// RepeatBox
 			// 
 			this->RepeatBox->Location = System::Drawing::Point(164, 231);
@@ -613,42 +640,42 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// 
 			this->DataReadouts->AllowUserToAddRows = false;
 			this->DataReadouts->AllowUserToDeleteRows = false;
-			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->DataReadouts->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle6->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->DataReadouts->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
 			this->DataReadouts->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->DataReadouts->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {
 				this->Step, this->Timepoint,
 					this->DelayPos, this->delayStatus
 			});
-			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			dataGridViewCellStyle2->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle2->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-			this->DataReadouts->DefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+			this->DataReadouts->DefaultCellStyle = dataGridViewCellStyle7;
 			this->DataReadouts->Location = System::Drawing::Point(291, 325);
 			this->DataReadouts->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->DataReadouts->Name = L"DataReadouts";
 			this->DataReadouts->ReadOnly = true;
-			dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->DataReadouts->RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+			dataGridViewCellStyle8->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle8->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle8->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle8->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->DataReadouts->RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
 			this->DataReadouts->RowHeadersWidth = 62;
 			this->DataReadouts->Size = System::Drawing::Size(862, 343);
 			this->DataReadouts->TabIndex = 8;
@@ -767,26 +794,26 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// 
 			this->TimePoints->AllowUserToAddRows = false;
 			this->TimePoints->AllowUserToDeleteRows = false;
-			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle9->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle9->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			dataGridViewCellStyle4->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle4->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle4->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle4->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->TimePoints->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+			dataGridViewCellStyle9->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle9->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle9->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle9->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->TimePoints->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
 			this->TimePoints->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->TimePoints->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(1) { this->TimepointList });
-			dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle10->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle10->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-			this->TimePoints->DefaultCellStyle = dataGridViewCellStyle5;
+			dataGridViewCellStyle10->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle10->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle10->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle10->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+			this->TimePoints->DefaultCellStyle = dataGridViewCellStyle10;
 			this->TimePoints->Location = System::Drawing::Point(27, 325);
 			this->TimePoints->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->TimePoints->Name = L"TimePoints";
@@ -816,7 +843,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// nsIndicator
 			// 
 			this->nsIndicator->AutoSize = true;
-			this->nsIndicator->Location = System::Drawing::Point(526, 183);
+			this->nsIndicator->Location = System::Drawing::Point(523, 183);
 			this->nsIndicator->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->nsIndicator->Name = L"nsIndicator";
 			this->nsIndicator->Size = System::Drawing::Size(51, 24);
@@ -837,7 +864,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			// 
 			this->psIndicator->AutoSize = true;
 			this->psIndicator->Checked = true;
-			this->psIndicator->Location = System::Drawing::Point(465, 183);
+			this->psIndicator->Location = System::Drawing::Point(471, 183);
 			this->psIndicator->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->psIndicator->Name = L"psIndicator";
 			this->psIndicator->Size = System::Drawing::Size(51, 24);
@@ -892,7 +919,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->fileNameBase->Location = System::Drawing::Point(165, 182);
 			this->fileNameBase->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->fileNameBase->Name = L"fileNameBase";
-			this->fileNameBase->Size = System::Drawing::Size(282, 26);
+			this->fileNameBase->Size = System::Drawing::Size(117, 26);
 			this->fileNameBase->TabIndex = 9;
 			this->fileNameBase->Text = L"Test_01";
 			// 
@@ -1538,6 +1565,13 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 			this->label15->Size = System::Drawing::Size(116, 20);
 			this->label15->TabIndex = 5;
 			this->label15->Text = L"Default Speed:";
+			// 
+			// delaySpeedSetting
+			// 
+			this->delaySpeedSetting->Location = System::Drawing::Point(0, 0);
+			this->delaySpeedSetting->Name = L"delaySpeedSetting";
+			this->delaySpeedSetting->Size = System::Drawing::Size(100, 26);
+			this->delaySpeedSetting->TabIndex = 6;
 			// 
 			// CameraSettingsBox
 			// 
@@ -2634,7 +2668,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 						upStat = "Updating DM communication for step " + gcnew String(std::to_string(curStep + 1).c_str()) + ".\r\n";
 						this->BeginInvoke(gcnew UpdateCamStatus(this, &UEMAuto::CamStatUpdater), upStat);
 						// UPDATE CAMERA COMMUNICATION DOCUMENT
-						dmCommWriter.WriteData("C:\\InputFileTest.txt", msclr::interop::marshal_as<std::string>(this->fileSavePath->Text), msclr::interop::marshal_as<std::string>(this->fileNameBase->Text), std::string(units), std::to_string(curScanStep + 1), msclr::interop::marshal_as<std::string>(delayText), std::to_string(curScan));
+						dmCommWriter.WriteData("InputFileTest.txt", msclr::interop::marshal_as<std::string>(this->fileSavePath->Text), msclr::interop::marshal_as<std::string>(this->fileNameBase->Text), std::string(units), std::to_string(curScanStep + 1), msclr::interop::marshal_as<std::string>(delayText), std::to_string(curScan), msclr::interop::marshal_as<std::string>(this->acqTimeBox->Text));
 
 						upStat = "Updating ULG file for step " + gcnew String(std::to_string(curStep + 1).c_str()) + ".\r\n";
 						this->BeginInvoke(gcnew UpdateCamStatus(this, &UEMAuto::CamStatUpdater), upStat);
@@ -2758,7 +2792,7 @@ private: System::Windows::Forms::TextBox^ scanScriptIndex;
 					upStat = "Updating DM communication for step " + gcnew String(std::to_string(curStep + 1).c_str()) + ".\r\n";
 					this->BeginInvoke(gcnew UpdateCamStatus(this, &UEMAuto::CamStatUpdater), upStat);
 					// UPDATE CAMERA COMMUNICATION DOCUMENT
-					dmCommWriter.WriteData("C:\\InputFileTest.txt", msclr::interop::marshal_as<std::string>(this->fileSavePath->Text), msclr::interop::marshal_as<std::string>(this->fileNameBase->Text), std::string(units), std::to_string(curScanStep + 1), msclr::interop::marshal_as<std::string>(delayText), std::to_string(curScan));
+					dmCommWriter.WriteData("InputFileTest.txt", msclr::interop::marshal_as<std::string>(this->fileSavePath->Text), msclr::interop::marshal_as<std::string>(this->fileNameBase->Text), std::string(units), std::to_string(curScanStep + 1), msclr::interop::marshal_as<std::string>(delayText), std::to_string(curScan), msclr::interop::marshal_as<std::string>(this->acqTimeBox->Text));
 
 					upStat = "Updating ULG file for step " + gcnew String(std::to_string(curStep + 1).c_str()) + ".\r\n";
 					this->BeginInvoke(gcnew UpdateCamStatus(this, &UEMAuto::CamStatUpdater), upStat);

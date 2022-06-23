@@ -24,7 +24,7 @@ class XPSObj(object):
         else:
             print 'Open ', address, ":", port, " => failure ", result
         
-        f = open('/connectStatFile', 'w')
+        f = open('/connectStatFile.txt', 'w')
         f.write('1')
         f.close()
 
@@ -38,12 +38,12 @@ class XPSObj(object):
 
     def XPS_Close(self,myXPS):
         self.myXPS.CloseInstrument()
-        f = open('/connectStatFile', 'w')
+        f = open('/connectStatFile.txt', 'w')
         f.write('0')
         f.close()
 
     def processMovementFile():
-        f = open('/movementCommFile','r')
+        f = open('/movementCommFile.txt','r')
         posMov = float(f.readline())
         compStat = int(f.readline())
         f.close()
@@ -51,20 +51,20 @@ class XPSObj(object):
         return posMov, compStat
 
     def indicateCompletedMovement():
-        f = open('/movementCommFile','w')
+        f = open('/movementCommFile.txt','w')
         f.write(str(posMov))
         f.write('1')
         f.close()
 
     def checkDisconnectOrder():
-        f = open('/connectStatFile','r')
+        f = open('/connectStatFile.txt','r')
         checker = int(f.readline())
         f.close()
         return checker
 
     def signalPosition(self): # async
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2): # have a more rigorous method to kill the thread
-            f = open('/positionFile','w')
+            f = open('/positionFile.txt','w')
             f.write(str(self.myXPS.GetCurrentPosition())) #is this the correct function?
             f.close()
             time.sleep(0.1) # pause every 100 ms, don't need the crazy granularity
