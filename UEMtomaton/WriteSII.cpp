@@ -15,7 +15,7 @@ Parameters:
 
 */
 
-void WriteSII::WriteData(std::string FileName, std::string val1, std::string val2, std::string val3, std::string val4)
+void WriteSII::WriteData(std::string FileName, std::string val1, std::string val2, std::string val3, std::string val4, std::string val5)
 {
 
 	std::ofstream OpenFile;
@@ -27,6 +27,7 @@ void WriteSII::WriteData(std::string FileName, std::string val1, std::string val
 	OpenFile << "\n\0";
 	OpenFile << val3 + "\n\0";
 	OpenFile << val4 + "\n\0";
+	OpenFile << val5 + "\n\0";
 
 	OpenFile.close();
 

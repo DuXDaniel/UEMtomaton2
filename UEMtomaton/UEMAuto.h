@@ -1813,17 +1813,8 @@ private: System::Windows::Forms::Label^ label4;
 				//SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 				SetForegroundWindowInternal(hFoundWnd);
 				//SetActiveWindow(hWnd);
-
-				this->PressKey(VK_F10);
-				for (int i = 0; i < std::stoi(msclr::interop::marshal_as<std::string>(this->customMenuIndex->Text)); i++)
-				{
-					this->PressKey(VK_RIGHT);
-				}
-				for (int i = 0; i < std::stoi(msclr::interop::marshal_as<std::string>(this->scanScriptIndex->Text)); i++)
-				{
-					this->PressKey(VK_DOWN);
-				}
-				this->PressKey(VK_RETURN);
+				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RUNUEMSCAN AHK
+				spawnl(P_NOWAIT, "UEMtomatonCameraAcquisition.exe", "UEMtomatonCameraAcquisition.exe", NULL);
 
 				System::Threading::Thread::Sleep(30);
 
@@ -3473,11 +3464,12 @@ private: System::Windows::Forms::Label^ label4;
 			upStat = "Updating DM communication for selective in situe mode.\r\n";
 			this->SII_status_box->AppendText(upStat);
 			// UPDATE CAMERA COMMUNICATION DOCUMENT
-			SIICommWriter.WriteData("C:\\SIIFileInput.txt", msclr::interop::marshal_as<std::string>(this->filepathSelInSitu->Text), msclr::interop::marshal_as<std::string>(this->filebaseSelInSitu->Text), std::to_string(SII_images_skipped), std::to_string(SII_total_saves)); //"C:\\TestFile\\SIIFileInput.txt", msclr::interop::marshal_as<std::string>(this->filepathSelInSitu->Text), msclr::interop::marshal_as<std::string>(this->filebaseSelInSitu->Text), std::to_string(SII_images_skipped), std::to_string(SII_total_saves)
+			SIICommWriter.WriteData("C:\\SIIFileInput.txt", msclr::interop::marshal_as<std::string>(this->filepathSelInSitu->Text), msclr::interop::marshal_as<std::string>(this->filebaseSelInSitu->Text), std::to_string(SII_images_skipped), std::to_string(SII_total_saves), std::to_string(SII_acq_time)); //"C:\\TestFile\\SIIFileInput.txt", msclr::interop::marshal_as<std::string>(this->filepathSelInSitu->Text), msclr::interop::marshal_as<std::string>(this->filebaseSelInSitu->Text), std::to_string(SII_images_skipped), std::to_string(SII_total_saves)
 
 			HWND hFoundWnd = NULL;
 			WindowSearcher finder;
 			hFoundWnd = finder.FocusWindow();
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! SELECTIVE INSITU AHK
 			if (hFoundWnd != NULL)
 			{
 				// move to foreground
@@ -3486,17 +3478,7 @@ private: System::Windows::Forms::Label^ label4;
 				//SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 				SetForegroundWindowInternal(hFoundWnd);
 				//SetActiveWindow(hWnd);
-
-				this->PressKey(VK_F10);
-				for (int i = 0; i < std::stoi(msclr::interop::marshal_as<std::string>(this->customMenuIndex->Text)); i++)
-				{
-					this->PressKey(VK_RIGHT);
-				}
-				for (int i = 0; i < std::stoi(msclr::interop::marshal_as<std::string>(this->selectiveInSituIndex->Text)); i++)
-				{
-					this->PressKey(VK_DOWN);
-				}
-				this->PressKey(VK_RETURN);
+				spawnl(P_NOWAIT, "SelectiveImaging.exe", "SelectiveImaging.exe", NULL);
 
 				System::Threading::Thread::Sleep(30);
 

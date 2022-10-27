@@ -1,10 +1,9 @@
 import sys
 import time
 import threading
-sys.path.append(r'C:\Windows\Microsoft.NET\assembly\GAC_64\Newport.XPS.CommandInterface\v4.0_1.0.0.0__9a267756cf640dcf')
-# The CLR module provide functions for interacting with the underlying
-# .NET runtime
 import clr
+clr.AddReference(r'C:\Windows\Microsoft.NET\assembly\GAC_64\Newport.XPS.CommandInterface\v4.0_1.0.0.0__9a267756cf640dcf')# The CLR module provide functions for interacting with the underlying
+# .NET runtime
 # Add reference to assembly and import names from namespace (IronPython) 
 clr.AddReferenceToFile("Newport.XPS.CommandInterface.dll") from CommandInterfaceXPS import *
 
@@ -20,9 +19,9 @@ class XPSObj(object):
         timeout = 1000
         result = self.myXPS.OpenInstrument(address, port, timeout)
         if result == 0:
-            print 'Open ', address, ":", port, " => Successful"
+            print("Open ", address, ":", port, " => Successful")
         else:
-            print 'Open ', address, ":", port, " => failure ", result
+            print("Open ", address, ":", port, " => failure ", result)
         
         f = open('/connectStatFile.txt', 'w')
         f.write('1')
@@ -38,33 +37,33 @@ class XPSObj(object):
 
     def XPS_Close(self,myXPS):
         self.myXPS.CloseInstrument()
-        f = open('/connectStatFile.txt', 'w')
+        f = open('connectStatFile.txt', 'w')
         f.write('0')
         f.close()
 
-    def processMovementFile():
-        f = open('/movementCommFile.txt','r')
+    def processMovementFile(self):
+        f = open('movementCommFile.txt','r')
         posMov = float(f.readline())
         compStat = int(f.readline())
         f.close()
 
         return posMov, compStat
 
-    def indicateCompletedMovement():
-        f = open('/movementCommFile.txt','w')
-        f.write(str(posMov))
+    def indicateCompletedMovement(self):
+        f = open('movementCommFile.txt','w')
+        f.write(str(posMov) + "\n")
         f.write('1')
         f.close()
 
-    def checkDisconnectOrder():
-        f = open('/connectStatFile.txt','r')
+    def checkDisconnectOrder(self):
+        f = open('connectStatFile.txt','r')
         checker = int(f.readline())
         f.close()
         return checker
 
     def signalPosition(self): # async
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2): # have a more rigorous method to kill the thread
-            f = open('/positionFile.txt','w')
+            f = open('positionFile.txt','w')
             f.write(str(self.myXPS.GetCurrentPosition())) #is this the correct function?
             f.close()
             time.sleep(0.1) # pause every 100 ms, don't need the crazy granularity
@@ -79,12 +78,12 @@ class XPSObj(object):
             time.sleep(0.1) # pause every 100 ms, don't need the crazy granularity
 
     def initOrderLoop(self):
-        self._orderLoop_thread = threading.Thread(target=self.orderLoop, args=(self.myXPS))
+        self._orderLoop_thread = threading.Thread(target=self.orderLoop, args=())
         self._orderLoop_thread.daemon = True
         self._orderLoop_thread.start()
 
     def initSignalPos(self):
-        self._signalPosition_thread = threading.Thread(target=self.signalPosition, args=(self.myXPS))
+        self._signalPosition_thread = threading.Thread(target=self.signalPosition, args=())
         self._signalPosition_thread.daemon = True
         self._signalPosition_thread.start()
 
@@ -100,6 +99,7 @@ def main(argv):
         checkLoop = controlXPS.checkDisconnectOrder()
         if (checkLoop == 2):
             controlXPS.checkLoop = 2
+            controlXPS.XPS_Close()
         time.sleep(0.5)
 
 if __name__ == '__main__':

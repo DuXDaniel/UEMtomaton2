@@ -5,7 +5,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 file := FileOpen("InputFileTest.txt", 'r')
 
-Loop, read, InputFileTest.txt
+Loop, read, %file%
 {
     if (%A_Index% = 1)
         fileSavePath := %A_LoopReadLine%
@@ -23,14 +23,29 @@ Loop, read, InputFileTest.txt
         acqTime := %A_LoopReadLine%
 }
 
-fullImgName = %FileNameBase%_%scannum%_%stepnumber%_%delay%%delayunits%.dm3 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!! not gatan, what image file format that preserves counts?
-fullImgPath = %fileSavePath%/%FileNameBase%_%scannum%_%stepnumber%_%delay%%delayunits%.dm3 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!! not gatan, what image file format that preserves counts?
+fullImgName := %FileNameBase%_%scannum%_%stepnumber%_%delay%%delayunits% ; !!!!!!!!!!!!!!!!!!!!!!!!!!!! not gatan, what image file format that preserves counts?
+fullImgPath := %fileSavePath%/%fullImgName% ; !!!!!!!!!!!!!!!!!!!!!!!!!!!! not gatan, what image file format that preserves counts?
 
-; click to acquire image
+; Set active window to TFI
+
+Click, posxint posyint ; acquisition
 
 sleepTime := acqTime*1000 + 3000
 sleep sleepTime 
 
-; save image
+Click, posxint posyint ; File
+sleep 100
+Click, posxint posyint ; Save As
+sleep 100
+Click, posxint posyint ; Open File Type Menu
+sleep 100
+Click, posxint posyint ; Select File Type
+sleep 100
+Click, posxint posyint ; Click on File Name Box
+sleep 100
+Send fullImgName ; Type in the full image name
+sleep 100
+Click, posxint posyint ; Save
+sleep 100
 
-; exit AHK script
+return ; exit AHK script
