@@ -1,9 +1,9 @@
 #pragma once
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "kernel32.lib")
-#pragma comment (lib, "user32.lib")
-#pragma comment (lib, "SoloistC.lib")
-#pragma comment (lib, "SoloistC64.lib")
+//#pragma comment (lib, "Ws2_32.lib")
+//#pragma comment (lib, "kernel32.lib")
+//#pragma comment (lib, "user32.lib")
+//#pragma comment (lib, "SoloistC.lib")
+//#pragma comment (lib, "SoloistC64.lib")
 
 #include <sys/stat.h>
 #include <winsock2.h>

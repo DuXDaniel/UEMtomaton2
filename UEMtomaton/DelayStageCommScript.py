@@ -72,7 +72,7 @@ class XPSObj(object):
             if (compStat == 0):
                 self.myXPS.GroupMoveAbsolute('Group1',posMov,1)
                 res, stat = self.myXPS.GroupStatusGet('Group1')
-                while (stat != 12):
+                while (stat != 12): # status of 12 indicates waiting after completed movement
                     res, stat = self.myXPS.GroupStatusGet('Group1')
                     time.sleep(2)
                 self.indicateCompletedMovement()
@@ -93,7 +93,6 @@ def main(argv):
     controlXPS.XPS_Open("192.168.254.254", 5001)
     controlXPS.initOrderLoop()
     controlXPS.initSignalPos()
-    controlXPS.initDisconLoop()
 
     # loop that holds the process and prevents it from autocompleting
     while (checkLoop != 2):
@@ -101,8 +100,9 @@ def main(argv):
         controlXPS.checkLoop = checkLoop
         if (checkLoop == 2):
             controlXPS.checkLoop = 2
+            time.sleep(3)
             controlXPS.XPS_Close()
-        time.sleep(0.5)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main(sys.argv)
