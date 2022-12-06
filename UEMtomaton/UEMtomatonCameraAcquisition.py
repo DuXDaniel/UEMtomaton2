@@ -1,121 +1,75 @@
-HWND hFoundWnd = NULL
-WindowSearcher finder
-hFoundWnd = finder.FocusWindow()
-if (hFoundWnd != NULL):
-    # move to foreground
-    self.WindowState = System::Windows::Forms::FormWindowState::Minimized
-    self.WindowState = System::Windows::Forms::FormWindowState::Normal # self is the dumbest hack I've tried and I'm almost ashamed it works. Almost.
-    #SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
-    SetForegroundWindowInternal(hFoundWnd)
-    #SetActiveWindow(hWnd)
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RUNUEMSCAN AHK
+import sys
+import pywinauto
+import time
+import tkinter as tk
+from tkinter import simpledialog
+        
+def PressKey(keypress):
+    ###### Press on keyboard the passed request
+    pywinauto.keyboard.send_keys(keypress,pause=0.05)
+    time.sleep(0.1)
 
-    time.sleep(0.03)
+def FocusTheDesiredWnd():
+    searchApp = pywinauto.application.Application()
+    try:
+        searchApp.connect(title_re=r'.*xT microscope Control.*')
+        
+        restoreApp = searchApp.top_window()
+        restoreApp.minimize()
+        restoreApp.restore()
+        restoreApp.set_focus()
+        return restoreApp
+    except:
+        return 0
 
-    self.WindowState = System::Windows::Forms::FormWindowState::Minimized
-    self.WindowState = System::Windows::Forms::FormWindowState::Normal # facepalm
-else:
-    upStat = "Window containing DigitalMicrograph title was not found.\r\n"
-    self.camStat.insert(upStat)
+def main(argv):
+    ROOT = tk.Tk()
 
-def SetForegroundWindowInternal(HWND hWnd):
-        if (!::IsWindow(hWnd)):
-            return
+    ROOT.withdraw()
+    # the input dialog
+    USER_INP = float(simpledialog.askstring(title="Acquisition Time", prompt="Acquisition time:"))
 
-        BYTE keyState[256] = { 0 }
-        #to unlock SetForegroundWindow we need to imitate Alt pressing
-        if (::GetKeyboardState((LPBYTE)& keyState)):
-            if (!(keyState[VK_MENU] & 0x80)):
-                ::keybd_event(VK_MENU, 0, KEYEVENTF_EXTENDEDKEY | 0, 0)
+    hFoundWnd = FocusTheDesiredWnd()
 
-        ::SetForegroundWindow(hWnd)
+    f = open("AcqStat.txt",'r')
+    statLine = f.readLine()
+    f.close()
+    while (statLine != "-1"):
+        
+        hFoundWnd = FocusTheDesiredWnd()
 
-        if (::GetKeyboardState((LPBYTE)& keyState)):
-            if (!(keyState[VK_MENU] & 0x80)):
-                ::keybd_event(VK_MENU, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
-    def PressKey(WORD keypress):
-        INPUT input
-        WORD vkey = keypress # see link below
-        input.type = INPUT_KEYBOARD
-        input.ki.wScan = MapVirtualKey(vkey, MAPVK_VK_TO_VSC)
-        input.ki.time = 0
-        input.ki.dwExtraInfo = 0
-        input.ki.wVk = vkey
-        input.ki.dwFlags = 0 # there is no KEYEVENTF_KEYDOWN
-        SendInput(1, &input, sizeof(INPUT))
+        if(hFoundWnd != 0):
+            if (statLine == "0"):
+                f = open("AcquisitionSettings.txt",'r')
+                filepath = f.readline()
+                filebase = f.readline()
+                curScanStep = f.readline()
+                curDelay = f.readline()
+                curScan = f.readline()
+                f.close()
 
-        System::Threading::Thread::Sleep(30)
-        input.ki.dwFlags = KEYEVENTF_KEYUP
-        SendInput(1, &input, sizeof(INPUT))
-    def PressEnter():
-        INPUT ip
-        ip.type = INPUT_KEYBOARD
-        ip.ki.time = 0
-        ip.ki.dwFlags = KEYEVENTF_UNICODE
-        ip.ki.wScan = VK_RETURN #VK_RETURN is the code of Return key
-        ip.ki.wVk = 0
+                filename = filepath + filebase + "_" + curScan + "_" + curScanStep + "_" + curDelay + ".tif"
 
-        ip.ki.dwExtraInfo = 0
-        SendInput(1, &ip, sizeof(INPUT))
+                PressKey('{VK_F2}')
 
-class WindowSearcher
-{
+                time.sleep(USER_INP)
 
-public:
-	HWND FocusWindow();
-	static BOOL CALLBACK FindTheDesiredWnd(HWND hWnd, LPARAM lParam);
+                quadfile = filename
+                PressKey(quadfile)
+                PressKey('{VK_RETURN}')
 
-};
-extern WindowSearcher finder;
-#pragma once
-#include "WindowFinder.h"
+                f = open("AcqStat.txt",'w')
+                f.write("1")
+                f.close()
 
-/*
+            f = open("AcqStat.txt",'r')
+            statLine = f.readLine()
+            f.close()
+        else:
+            f = open("AcqStat.txt",'w')
+            f.write("-1")
+            f.close()
+            statLine = "-1"
 
-Purpose: To write to InputFileTest.txt, which passes data from the delay stage to the DM Script.
-
-Parameters:
-	String FilePath: Path of InputFileTest.txt
-	String FileName: InputFileTest.txt
-
-	int DelayTime: the delay time of the delay stage (sourced from delay stage automation)
-	int stepNumber: the current step number (sourced from delay stage automation)
-	String dm3path: the path to save images in (sourced from camera computer user input)
-	String dm3FN: the file name of the dm3 (sourced from both camera computer user input)
-	String delayunits: the units on the delay (sourced from delay stage automation)
-	int scannum: the current scan number (sourced from delay stage automation)
-	int Lambda: the wavelength of pump used (sourced from camera computer user input)
-	int RepRate: the repetition rate used (sourced from camera computer user input)
-	int Power: the power of the pump (sourced from camera computer user input)
-
-*/
-
-HWND WindowSearcher::FocusWindow()
-{
-
-	HWND hFoundWnd = NULL;
-	EnumWindows((WNDENUMPROC)&WindowSearcher::FindTheDesiredWnd, reinterpret_cast<LPARAM>(&hFoundWnd));
-
-	return hFoundWnd;
-}
-
-/*
-		*/
-BOOL CALLBACK WindowSearcher::FindTheDesiredWnd(HWND hWnd, LPARAM lParam)
-{
-	int length = ::GetWindowTextLength(hWnd);
-	TCHAR* windowBuffer;
-	windowBuffer = new TCHAR[length + 1];
-	memset(windowBuffer, 0, (length + 1) * sizeof(TCHAR));
-	GetWindowText(hWnd, windowBuffer, length + 1);
-	std::string windowTitle;
-	std::wstring wStr = windowBuffer;
-	windowTitle = std::string(wStr.begin(), wStr.end());
-	std::string checkTitle = "DigitalMicrograph";
-	if (windowTitle.find(checkTitle) != std::string::npos)
-	{
-		*(reinterpret_cast<HWND*>(lParam)) = hWnd;
-		return FALSE; // stop enumerating
-	}
-	return TRUE; // keep enumerating
-}
+if __name__ == '__main__':
+    main(sys.argv)

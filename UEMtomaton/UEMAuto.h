@@ -22,11 +22,6 @@
 #include <filesystem>
 #include <chrono>       // std::chrono::system_clock
 #include <random>       // std::default_random_engine
-#include "WriteULG.h"
-#include "WriteDMComm.h"
-#include "WriteSII.h"
-#include "WriteSettings.h"
-#include "WindowFinder.h"
 
 /* -------------------------------GLOBAL VARIABLE DECLARATIONS-------------------------------------- */
 
