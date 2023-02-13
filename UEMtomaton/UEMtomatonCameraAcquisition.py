@@ -46,13 +46,14 @@ def main(argv):
                 curScanStep = f.readline()
                 curDelay = f.readline()
                 curScan = f.readline()
+                curPos = f.readline()
                 f.close()
 
                 filename = filepath + filebase + "_" + curScan + "_" + curScanStep + "_" + curDelay + ".tif"
 
                 PressKey('{VK_F2}')
 
-                time.sleep(USER_INP)
+                time.sleep(USER_INP + 5)
 
                 quadfile = filename
                 PressKey(quadfile)

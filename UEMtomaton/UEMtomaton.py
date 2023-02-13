@@ -1,7 +1,6 @@
 import math
 import time
 import sys
-import json
 import socket
 import subprocess
 import random
@@ -52,7 +51,7 @@ class WidgetGallery():
 
         self.mainWindow = tk.Tk()
         self.mainWindow.title("UEMtomaton")
-        icon = PhotoImage(file = './Icons/UEMtamaton_icon_32.png')
+        icon = PhotoImage(file = './Icons/UEMtomaton_icon_32.png')
         self.mainWindow.protocol("WM_DELETE_WINDOW", self.fullClose)
         self.mainWindow.iconphoto(False, icon)
         self.mainWindow.grid_rowconfigure(0, weight=1)
@@ -274,12 +273,12 @@ class WidgetGallery():
         self.SISAcqTimeEntry = ttk.Entry(
             self.SISAcqFrame
         )
-        self.SISImgSkipLabel = ttk.Label(
+        self.SISWaitTimeLabel = ttk.Label(
             self.SISAcqFrame,
-            text="Images Skipped: ",
+            text="Wait Time (s): ",
             font=("Arial",round(self.normFontSize*1.5))
         )
-        self.SISImgSkipEntry = ttk.Entry(
+        self.SISWaitTimeEntry = ttk.Entry(
             self.SISAcqFrame
         )
 
@@ -305,8 +304,8 @@ class WidgetGallery():
 
         self.SISAcqTimeLabel.grid(column=0, row=0, padx=5, pady=5, sticky="e")
         self.SISAcqTimeEntry.grid(column=1, row=0, padx=5, pady=5)
-        self.SISImgSkipLabel.grid(column=2, row=0, padx=5, pady=5, sticky="e")
-        self.SISImgSkipEntry.grid(column=3, row=0, padx=5, pady=5)
+        self.SISWaitTimeLabel.grid(column=2, row=0, padx=5, pady=5, sticky="e")
+        self.SISWaitTimeEntry.grid(column=3, row=0, padx=5, pady=5)
 
         self.SISBeginButton.grid(column=0, row=0, padx=5, pady=5, sticky="nesw")
         self.SISEndButton.grid(column=1, row=0, padx=5, pady=5, sticky="nesw")
@@ -1000,7 +999,7 @@ class WidgetGallery():
     ### DELAY STAGE CODE HERE---------------------------------------------------------------------------------------------------------------------------------------
     def delayConnect_Click(self):
         if (path.exists(self.delayScriptEntry.get().strip())):
-            subprocess.Popen(['python',self.DelayScriptEntry.get().strip()])
+            subprocess.Popen(['python',self.delayScriptEntry.get().strip()])
 
             self.keepDelValUpdateThread = 1
             self.mainWindow.after(100, self.delayValueUpdater_DoWork)
@@ -1357,7 +1356,7 @@ class WidgetGallery():
         f.write(self.SISFilepathEntry.get().strip() + "\n")
         f.write(self.SISFilebaseEntry.get().strip() + "\n")
         f.write(str(self.SISAcqTimeEntry) + "\n")
-        f.write(str(self.SISImgSkipEntry))
+        f.write(str(self.SISWaitTimeEntry))
         f.close()
         # START SIS SCRIPT HERE
         if (path.exists(self.SISScriptEntry.get().strip())):
@@ -1593,18 +1592,19 @@ class CamRunnerThread(threading.Thread):
 
             f.close()
 
-    def DMCommWriter(self, Filename, val1, val2, val3, val4, val5):
+    def AcqCommWriter(self, Filename, val1, val2, val3, val4, val5, val6):
         f = open(Filename,"w")
 
         f.write(val1 + "/\n\0")
         f.write(val2 + "\n\0")
         f.write(val3 + "\n\0")
         f.write(val4 + "\n\0")
-        f.write(val5)
+        f.write(val5 + "\n\0")
+        f.write(val6)
 
         f.close()
     
-    def DMCommStat(self, Filename, curStat):
+    def AcqCommStat(self, Filename, curStat):
         f = open(Filename,"w")
 
         f.write(curStat)
@@ -1705,7 +1705,7 @@ class CamRunnerThread(threading.Thread):
                 # Stop signal, stops and clears everything.
                 self.curStep = self.root.totImages
                 
-                self.DMCommStat("AcqStat.txt",'-1')
+                self.AcqCommStat("AcqStat.txt",'-1')
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Stopped on step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
             elif (self.root.runStat == 4): # Acquisition step before returning to movement step
@@ -1715,6 +1715,7 @@ class CamRunnerThread(threading.Thread):
                 
                 # ADJUST FOR DECIMAL DELAYS, WITH LIMITER TO A SINGLE DECIMAL PLACE
                 self.curDelay = self.root.curTimePoint
+                self.curPos = self.root.curDistPoint
                 if (self.curDelay % 1 != 0):
                     self.curDelay = round(self.curDelay * 10)
                     self.delayText = "d" + str(int(self.curDelay))
@@ -1728,7 +1729,7 @@ class CamRunnerThread(threading.Thread):
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating DM communication for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
                 # UPDATE CAMERA COMMUNICATION DOCUMENT
-                self.DMCommWriter("AcquisitionSettings.txt", self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), str(self.curScanStep + 1), delayText, str(self.curScan))
+                self.AcqCommWriter("AcquisitionSettings.txt", self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), str(self.curScanStep + 1), delayText, str(self.curScan), str(self.curPos))
 
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating ULG file for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
@@ -1739,7 +1740,7 @@ class CamRunnerThread(threading.Thread):
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Waiting to see image name " + curFileTot + " for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
                 
-                self.DMCommStat("AcqStat.txt",'0')
+                self.AcqCommStat("AcqStat.txt",'0')
                 f = open("AcqStat.txt",'r')
                 statLine = f.readline()
                 f.close()

@@ -4,7 +4,7 @@ import threading
 from pythonnet import load
 load("netfx")
 import clr
-clr.AddReference(r'C:\Windows\Microsoft.NET\assembly\GAC_64\Newport.XPS.CommandInterface\v4.0_2.2.1.0__9a267756cf640dcf\Newport.XPS.CommandInterface.dll')
+clr.AddReference(r'C:\Users\dudan\Desktop\Work\Columbia\Software\UEMtomaton 2.0\UEMtomaton\Newport.XPS.CommandInterface.dll')
 # The CLR module provide functions for interacting with the underlying
 # .NET runtime
 # Add reference to assembly and import names from namespace
@@ -25,13 +25,13 @@ class XPSObj(object):
         result = self.myXPS.OpenInstrument(address, port, timeout)
         if result == 0:
             print("Open ", address, ":", port, " => Successful")
-            f = open('/connectStatFile.txt', 'w')
+            f = open('connectStatFile.txt', 'w')
             f.write('1')
             f.close()
         else:
             print("Open ", address, ":", port, " => failure ", result)
 
-    def XPS_Close(self,myXPS):
+    def XPS_Close(self):
         self.myXPS.CloseInstrument()
         f = open('connectStatFile.txt', 'w')
         f.write('0')
@@ -45,8 +45,9 @@ class XPSObj(object):
 
         return posMov, compStat
 
-    def indicateCompletedMovement(self):
+    def indicateCompletedMovement(self,posMov):
         f = open('movementCommFile.txt','w')
+        print(str(posMov))
         f.write(str(posMov) + "\n")
         f.write('1')
         f.close()
@@ -61,7 +62,8 @@ class XPSObj(object):
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2):
             f = open('positionFile.txt','w')
             posRef = [0.]
-            res, pos = self.myXPS.GroupPositionCurrentGet('Group1',posRef,1)
+            res = self.myXPS.GroupPositionCurrentGet('Group1',posRef,1)
+            pos = res[1]
             f.write(str(pos[0]))
             f.close()
             time.sleep(1) # pause every 100 ms, don't need the crazy granularity
@@ -70,12 +72,14 @@ class XPSObj(object):
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2):
             posMov, compStat = self.processMovementFile()
             if (compStat == 0):
-                self.myXPS.GroupMoveAbsolute('Group1',posMov,1)
-                res, stat = self.myXPS.GroupStatusGet('Group1')
+                self.myXPS.GroupMoveAbsolute('Group1',[posMov],1)
+                res = self.myXPS.GroupStatusGet('Group1')
+                stat = res[1]
                 while (stat != 12): # status of 12 indicates waiting after completed movement
-                    res, stat = self.myXPS.GroupStatusGet('Group1')
+                    res = self.myXPS.GroupStatusGet('Group1')
+                    stat = res[1]
                     time.sleep(2)
-                self.indicateCompletedMovement()
+                self.indicateCompletedMovement(posMov)
             time.sleep(1) # pause every 100 ms, don't need the crazy granularity
 
     def initOrderLoop(self):
@@ -94,6 +98,7 @@ def main(argv):
     controlXPS.initOrderLoop()
     controlXPS.initSignalPos()
 
+    checkLoop = controlXPS.checkDisconnectOrder()
     # loop that holds the process and prevents it from autocompleting
     while (checkLoop != 2):
         checkLoop = controlXPS.checkDisconnectOrder()

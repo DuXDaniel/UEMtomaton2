@@ -1,8 +1,6 @@
 import sys
 import pywinauto
 import time
-import tkinter as tk
-from tkinter import simpledialog
         
 def PressKey(keypress):
     ###### Press on keyboard the passed request
@@ -27,11 +25,14 @@ def main(argv):
 
     f = open("SISSettings.txt",'r')
     statLine = f.readLine()
-    filepath = f.readline()
-    filebase = f.readline()
-    acqTime = f.readline()
-    skipAmt = f.readline()
-    f.close()
+    try:
+        filepath = f.readline()
+        filebase = f.readline()
+        acqTime = f.readline()
+        skipAmt = f.readline()
+        f.close()
+    except:
+        f.close()
 
     count = 0
     while (statLine != "0"):
@@ -54,7 +55,7 @@ def main(argv):
             f.close()
 
             if (statLine != "0"):
-                time.sleep(acqTime*skipAmt)
+                time.sleep(skipAmt)
 
 if __name__ == '__main__':
     main(sys.argv)
