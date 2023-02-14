@@ -14,7 +14,8 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
-excludes = ["altgraph","colorama","cupy","Cython","dill","llvmlite","matplotlib","multiprocess","numba","numba-scipy","p-tqdm","pandas","PyQt5","PyQt5-Qt5","PyQt5-sip","scipy","scikit-learn","tqdm"]
+excludes = []
+# "altgraph","colorama","cupy","Cython","dill","llvmlite","matplotlib","multiprocess","numba","numba-scipy","p-tqdm","pandas","PyQt5","PyQt5-Qt5","PyQt5-sip","scipy","scikit-learn","tqdm"
 executables = [Executable('UEMtomaton.py', base=base, icon="UEMtomaton_icon_256.ico")]
 
 setup(name = "UEMtomaton" ,
