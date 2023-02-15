@@ -35,11 +35,13 @@ def main(argv):
     statLine = f.readLine()
     f.close()
     while (statLine != "-1"):
+        f = open("AcqStat.txt",'r')
+        statLine = f.readLine()
+        f.close()
         
-        hFoundWnd = FocusTheDesiredWnd()
-
-        if(hFoundWnd != 0):
-            if (statLine == "0"):
+        if (statLine == "0"):
+            hFoundWnd = FocusTheDesiredWnd()
+            if(hFoundWnd != 0):
                 f = open("AcquisitionSettings.txt",'r')
                 filepath = f.readline()
                 filebase = f.readline()
@@ -62,15 +64,13 @@ def main(argv):
                 f = open("AcqStat.txt",'w')
                 f.write("1")
                 f.close()
+            else:
+                f = open("AcqStat.txt",'w')
+                f.write("-1")
+                f.close()
+                statLine = "-1"
 
-            f = open("AcqStat.txt",'r')
-            statLine = f.readLine()
-            f.close()
-        else:
-            f = open("AcqStat.txt",'w')
-            f.write("-1")
-            f.close()
-            statLine = "-1"
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     main(sys.argv)
