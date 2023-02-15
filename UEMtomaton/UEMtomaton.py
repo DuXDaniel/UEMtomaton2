@@ -14,6 +14,7 @@ import tkinter.ttk as ttk
 from tkinter import PhotoImage
 from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog
+import ttkthemes
 
 def main(argv):
     windowWidget = WidgetGallery()
@@ -49,7 +50,9 @@ class WidgetGallery():
         self.delValUpQueue = queue.Queue()
         self.delValCommQueue = queue.Queue()
 
-        self.mainWindow = tk.Tk()
+        self.mainWindow = ttkthemes.ThemedTk(background=True,theme="equilux")
+        self.mainWindow.option_add('*foreground', 'white')
+        self.mainWindow.option_add('*background', 'grey')
         self.mainWindow.title("UEMtomaton")
         icon = PhotoImage(file = './Icons/UEMtomaton_icon_32.png')
         self.mainWindow.protocol("WM_DELETE_WINDOW", self.fullClose)
@@ -1009,7 +1012,7 @@ class WidgetGallery():
             self.delayMessageBox.see("end")
             self.delayConnected = 1
         else:
-            errDial = tk.Tk()
+            errDial = ttkthemes.ThemedTk(background=True)
             errDial.title("Error")
             errLabel = ttk.Label(
                 errDial,
@@ -1142,8 +1145,8 @@ class WidgetGallery():
         #self.commDelayStat_server.setblocking(False)
         #self.commCamCommand_server.setblocking(False)
 
-        self.commDelayStat_server.bind((self.camIPEntry.get().strip(),6666))
-        self.commCamCommand_server.bind((self.camIPEntry.get().strip(),6667))
+        self.commDelayStat_server.bind(('',6666))
+        self.commCamCommand_server.bind(('',6667))
 
         # Update the user on listening for the connection to the delay value client and run client
         upStat = "Listening for incoming connections on ports 6666 and 6667...\r\n"
@@ -1180,7 +1183,7 @@ class WidgetGallery():
                 self.delayMessageBox.see("end")
                 self.delayConnected = 1
             else:
-                errDial = tk.Tk()
+                errDial = ttkthemes.ThemedTk(background=True)
                 errDial.title("Error")
                 errLabel = ttk.Label(
                     errDial,
@@ -1308,7 +1311,7 @@ class WidgetGallery():
                     curLine = 6
             f.close()
         else:
-            errDial = tk.Tk()
+            errDial = ttkthemes.ThemedTk(background=True)
             errDial.title("Error")
             errLabel = ttk.Label(
                 errDial,
@@ -1363,7 +1366,7 @@ class WidgetGallery():
             subprocess.Popen(['python',self.SISScriptEntry.get().strip()])
             print("hi")
         else:
-            errDial = tk.Tk()
+            errDial = ttkthemes.ThemedTk(background=True)
             errDial.title("Error")
             errLabel = ttk.Label(
                 errDial,
@@ -1811,9 +1814,9 @@ class CamRunnerThread(threading.Thread):
 class TimepointMaker():
 
     def __init__(self, parent=None):
-        self.mainWindow = tk.Toplevel()
+        self.mainWindow = ttkthemes.ThemedTk(background=True,toplevel=True,theme="equilux")
         self.mainWindow.title("Make Timepoints")
-        icon = PhotoImage(file = './Icons/UEMtamaton_icon_32.png')
+        icon = PhotoImage(file = './Icons/UEMtomaton_icon_32.png')
         self.mainWindow.grid_rowconfigure(0, weight=1)
         self.mainWindow.grid_columnconfigure(0, weight=1)
 
@@ -1924,7 +1927,7 @@ class TimepointMaker():
     def addRow(self):
         treeSelection = self.timeTree.focus()
 
-        self.entryWindow = tk.Toplevel()
+        self.entryWindow = ttkthemes.ThemedTk(background=True,toplevel=True,theme="equilux")
         self.entryVar1 = tk.StringVar()
         self.entryVar2 = tk.StringVar()
         self.entryVar3 = tk.StringVar()

@@ -18,7 +18,7 @@ class WidgetGallery():
     def __init__(self, parent=None):
         self.mainWindow = tk.Tk()
         self.mainWindow.title("Make Timepoints")
-        icon = PhotoImage(file = './Icons/UEMtamaton_icon_32.png')
+        icon = PhotoImage(file = './Icons/UEMtomaton_icon_32.png')
         self.mainWindow.grid_rowconfigure(0, weight=1)
         self.mainWindow.grid_columnconfigure(0, weight=1)
 

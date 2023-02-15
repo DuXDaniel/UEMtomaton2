@@ -4,3 +4,4 @@ clr==1.0.3
 clr-loader==0.2.5
 pythonnet==3.0.1
 cx-freeze==6.14.2
+ttkthemes==3.2.2
