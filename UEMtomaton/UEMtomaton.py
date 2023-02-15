@@ -127,7 +127,8 @@ class WidgetGallery():
         self.cameraScriptBrowse = ttk.Button(
             self.camSettingFrame,
             text="Browse",
-            command=lambda: self.browseCamScript_Click()
+            command=lambda: self.browseCamScript_Click(),
+            width=round(self.win_width*0.01)
         )
         self.SISScriptLabel = ttk.Label(
             self.camSettingFrame,
@@ -142,7 +143,8 @@ class WidgetGallery():
         self.SISScriptBrowse = ttk.Button(
             self.camSettingFrame,
             text="Browse",
-            command=lambda: self.browseSISScript_Click()
+            command=lambda: self.browseSISScript_Click(),
+            width=round(self.win_width*0.01)
         )
 
         self.delaySettingFrame = ttk.Frame(self.settingFrame)
@@ -187,7 +189,8 @@ class WidgetGallery():
         self.delayScriptBrowse = ttk.Button(
             self.delaySettingFrame,
             text="Browse",
-            command=lambda: self.browseDelayScript_Click()
+            command=lambda: self.browseDelayScript_Click(),
+            width=round(self.win_width*0.01)
         )
 
         self.saveLoadFrame = ttk.Frame(self.settingFrame)
@@ -208,8 +211,8 @@ class WidgetGallery():
         )
 
         self.camSettingLabel.grid(column=0, row=0, padx=5, pady=5, sticky="w")
-        self.camIPLabel.grid(column=0, row=1, padx=5, pady=5, sticky="e")
-        self.camIPEntry.grid(column=1, row=1, padx=5, pady=5, sticky="w")
+        self.camIPLabel.grid(column=0, row=1, padx=5, pady=8, sticky="e")
+        self.camIPEntry.grid(column=1, row=1, padx=5, pady=8, sticky="w")
         self.cameraScriptLabel.grid(column=0, row=2, padx=5, pady=5, sticky="e")
         self.cameraScriptEntry.grid(column=1, row=2, padx=5, pady=5, sticky="w")
         self.cameraScriptBrowse.grid(column=2, row=2, padx=5, pady=5, sticky="w")
@@ -218,10 +221,10 @@ class WidgetGallery():
         self.SISScriptBrowse.grid(column=2, row=3, padx=5, pady=5, sticky="w")
 
         self.delaySettingLabel.grid(column=0, row=0, padx=5, pady=5, sticky="w")
-        self.delayIPLabel.grid(column=0, row=1, padx=5, pady=5, sticky="e")
-        self.delayIPEntry.grid(column=1, row=1, padx=5, pady=5, sticky="w")
-        self.timeZeroLabel.grid(column=0, row=2, padx=5, pady=5, sticky="e")
-        self.timeZeroEntry.grid(column=1, row=2, padx=5, pady=5, sticky="w")
+        self.delayIPLabel.grid(column=0, row=1, padx=5, pady=8, sticky="e")
+        self.delayIPEntry.grid(column=1, row=1, padx=5, pady=8, sticky="w")
+        self.timeZeroLabel.grid(column=0, row=2, padx=5, pady=8, sticky="e")
+        self.timeZeroEntry.grid(column=1, row=2, padx=5, pady=8, sticky="w")
         self.delayScriptLabel.grid(column=0, row=3, padx=5, pady=5, sticky="e")
         self.delayScriptEntry.grid(column=1, row=3, padx=5, pady=5, sticky="w")
         self.delayScriptBrowse.grid(column=2, row=3, padx=5, pady=5, sticky="w")
@@ -230,8 +233,8 @@ class WidgetGallery():
         self.restoreButton.grid(column=1, row=0, padx=5, pady=5, sticky="w")
         self.saveButton.grid(column=2, row=0, padx=5, pady=5, sticky="e")
 
-        self.camSettingFrame.grid(column=0, row=0, padx=5, pady=5, sticky="nw")
-        self.delaySettingFrame.grid(column=1, row=0, padx=5, pady=5, sticky="nw")
+        self.camSettingFrame.grid(column=0, row=0, padx=5, pady=5, sticky="nsw")
+        self.delaySettingFrame.grid(column=1, row=0, padx=5, pady=5, sticky="nse")
         self.saveLoadFrame.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
 
         # SIS Frame
@@ -322,20 +325,23 @@ class WidgetGallery():
         self.delayStartButtonFrame = ttk.Frame(self.delayFrame)
         self.delayConnectButton = ttk.Button(
             self.delayStartButtonFrame,
-            text="Connect to\n Delay Stage",
-            command=lambda: self.delayConnect_Click()
+            text="Connect to\nDelay Stage",
+            command=lambda: self.delayConnect_Click(),
+            width=round(self.win_width*0.02)
         )
         self.initServerButton = ttk.Button(
             self.delayStartButtonFrame,
             text="Initialize Server",
-            command=lambda: self.ServInitButton_Click()
+            command=lambda: self.ServInitButton_Click(),
+            width=round(self.win_width*0.02)
         )
 
         self.delayEndButtonFrame = ttk.Frame(self.delayFrame)
         self.disconDelayButton = ttk.Button(
             self.delayEndButtonFrame,
-            text="Disconnect Server",
-            command=lambda: self.DisconServ_Click()
+            text="Disconnect\nfrom Server",
+            command=lambda: self.DisconServ_Click(),
+            width=round(self.win_width*0.015)
         )
 
         self.delayPosFrame = ttk.Frame(self.delayFrame)
@@ -394,24 +400,24 @@ class WidgetGallery():
         self.delayPositionSpaceLabel.grid(column=0, row=3, padx=5, pady=5, sticky="e")
         self.delayPositionSpaceStatus.grid(column=1, row=3, padx=5, pady=5, sticky="w")
 
-        self.delayMessageBox.grid(column=0, row=0, padx=5, pady=5, sticky="w")
+        self.delayMessageBox.grid(column=0, row=0, padx=5, pady=5, sticky="e")
 
         self.delayStartButtonFrame.grid(column=0, row=0, padx=5, pady=5, sticky="nw")
         self.delayEndButtonFrame.grid(column=1, row=0, padx=5, pady=5, sticky="ne")
         self.delayPosFrame.grid(column=0, row=1, columnspan=2, padx=5, pady=5, sticky="nw")
-        self.delayMessageFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="nw")
+        self.delayMessageFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="ne")
 
         # Camera Side Frame
             # Camera Connect Frame
         self.camConnFrame = ttk.Frame(self.cameraFrame)
         self.camConnButton = ttk.Button(
             self.camConnFrame,
-            text="Connect to Server",
+            text="Connect\nto Server",
             command=lambda: self.camConnToDelay_Click()
         )
         self.camDisconnButton = ttk.Button(
             self.camConnFrame,
-            text="Disconnect from Server",
+            text="Disconnect\nfrom Server",
             command=lambda: self.DisconCam_Click()
         )
         self.camConnSpacer = ttk.Label(
@@ -452,7 +458,8 @@ class WidgetGallery():
             font=("Arial",self.normFontSize)
         )
         self.camFilepathEntry = ttk.Entry(
-            self.camFileFrame
+            self.camFileFrame,
+            width=round(self.win_width*0.02)
         )
         self.camFilebaseLabel = ttk.Label(
             self.camFileFrame,
@@ -460,12 +467,14 @@ class WidgetGallery():
             font=("Arial",self.normFontSize)
         )
         self.camFilebaseEntry = ttk.Entry(
-            self.camFileFrame
+            self.camFileFrame,
+            width=round(self.win_width*0.02)
         )
         self.camBrowseButton = ttk.Button(
             self.camFileFrame,
             text="Browse",
-            command=lambda: self.BrowseFilePath_Click()
+            command=lambda: self.BrowseFilePath_Click(),
+            width=round(self.win_width*0.01)
         )
         self.camExtFrame = ttk.Frame(
             self.camFileFrame
@@ -488,7 +497,7 @@ class WidgetGallery():
         self.camExtFrame.grid(column=2, row=1, padx=5, pady=5, sticky="w")
 
         self.camConnFrame.grid(column=0, row=0, padx=5, pady=5, sticky="w")
-        self.camFileFrame.grid(column=0, row=1, padx=5, pady=5, sticky="nw")
+        self.camFileFrame.grid(column=0, row=1, padx=5, pady=5, sticky="ne")
 
             # Experimental Setup Frame
 
@@ -497,7 +506,8 @@ class WidgetGallery():
         self.makeTimeButton = ttk.Button(
             self.camFileFrame,
             text="Make Timepoints",
-            command=lambda: self.MakeTimeButton_Click()
+            command=lambda: self.MakeTimeButton_Click(),
+            width=round(self.win_width*0.025)
         )
         self.numCycleLabel = ttk.Label(
             self.camFileFrame,
@@ -529,12 +539,12 @@ class WidgetGallery():
             command=lambda: self.RunScan_Click()
         )
 
-        self.makeTimeButton.grid(column=3, row=0, rowspan=2, padx=5, pady=5, sticky="nesw")
+        self.makeTimeButton.grid(column=3, row=0, rowspan=2, padx=5, pady=5, sticky="nse")
         self.numCycleLabel.grid(column=4, row=0, padx=5, pady=5, sticky="e")
-        self.numCycleEntry.grid(column=5, row=0, padx=5, pady=5, sticky="w")
+        self.numCycleEntry.grid(column=5, row=0, padx=5, pady=5, sticky="e")
         self.randomizeCheck.grid(column=4, row=1, padx=5, pady=5, sticky="e")
-        self.randomizeLabel.grid(column=5, row=1, padx=5, pady=5, sticky="w")
-        self.runScanButton.grid(column=6, row=0, rowspan=2, padx=5, pady=5, sticky="nesw")
+        self.randomizeLabel.grid(column=5, row=1, padx=5, pady=5, sticky="e")
+        self.runScanButton.grid(column=6, row=0, rowspan=2, padx=5, pady=5, sticky="nse")
 
             # Experiment Status Frame
 
@@ -589,7 +599,7 @@ class WidgetGallery():
         self.timepointTable.grid(column=0, row=2, padx=5, pady=5, sticky="w")
         self.stepHistoryTable.grid(column=1, row=2, columnspan=2, padx=5, pady=5, sticky="e")
 
-        self.experimentStatFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="w")
+        self.experimentStatFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="nse")
 
             # Cancel Frame
 
@@ -607,9 +617,9 @@ class WidgetGallery():
         )
 
         self.cancelButton.grid(column=0, row=0, padx=5, pady=5, sticky="w")
-        self.camMessageBox.grid(column=1, row=0, padx=5, pady=5, sticky="w")
+        self.camMessageBox.grid(column=1, row=0, padx=5, pady=5, sticky="nse")
 
-        self.cancelFrame.grid(column=0, row=3, padx=5, pady=5, sticky="w")
+        self.cancelFrame.grid(column=0, row=3, padx=5, pady=5, sticky="nse")
 
         # Loading Settings
         if (path.exists('UEMtomatonConfig.txt')):

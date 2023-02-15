@@ -32,14 +32,16 @@ def main(argv):
     hFoundWnd = FocusTheDesiredWnd()
 
     f = open("AcqStat.txt",'r')
-    statLine = f.readLine()
+    statLine = f.readline()
     f.close()
     while (statLine != "-1"):
-        
-        hFoundWnd = FocusTheDesiredWnd()
+        f = open("AcqStat.txt",'r')
+        statLine = f.readline()
+        f.close()
 
-        if(hFoundWnd != 0):
-            if (statLine == "0"):
+        if (statLine == "0"):
+            hFoundWnd = FocusTheDesiredWnd()
+            if(hFoundWnd != 0):
                 f = open("AcquisitionSettings.txt",'r')
                 filepath = f.readline()
                 filebase = f.readline()
@@ -49,7 +51,7 @@ def main(argv):
                 curPos = f.readline()
                 f.close()
 
-                filename = filepath + filebase + "_" + curScan + "_" + curScanStep + "_" + curDelay + ".tif"
+                filename = filepath + "\\" + filebase + "_" + curScan + "_" + curScanStep + "_" + curDelay + ".tif"
 
                 PressKey('{VK_F2}')
 
@@ -62,15 +64,13 @@ def main(argv):
                 f = open("AcqStat.txt",'w')
                 f.write("1")
                 f.close()
+            else:
+                f = open("AcqStat.txt",'w')
+                f.write("-1")
+                f.close()
+                statLine = "-1"
 
-            f = open("AcqStat.txt",'r')
-            statLine = f.readLine()
-            f.close()
-        else:
-            f = open("AcqStat.txt",'w')
-            f.write("-1")
-            f.close()
-            statLine = "-1"
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     main(sys.argv)

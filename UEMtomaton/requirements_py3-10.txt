@@ -3,3 +3,4 @@ pywinauto==0.6.8
 clr==1.0.3
 pythonnet==3.0.1
 cx-freeze==6.13.1
+ttkthemes==3.2.2
