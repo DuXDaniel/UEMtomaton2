@@ -234,7 +234,7 @@ class WidgetGallery():
         self.saveButton.grid(column=2, row=0, padx=5, pady=5, sticky="e")
 
         self.camSettingFrame.grid(column=0, row=0, padx=5, pady=5, sticky="nsw")
-        self.delaySettingFrame.grid(column=1, row=0, padx=5, pady=5, sticky="nse")
+        self.delaySettingFrame.grid(column=1, row=0, padx=5, pady=5, sticky="nsw")
         self.saveLoadFrame.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
 
         # SIS Frame
@@ -405,7 +405,7 @@ class WidgetGallery():
         self.delayStartButtonFrame.grid(column=0, row=0, padx=5, pady=5, sticky="nw")
         self.delayEndButtonFrame.grid(column=1, row=0, padx=5, pady=5, sticky="ne")
         self.delayPosFrame.grid(column=0, row=1, columnspan=2, padx=5, pady=5, sticky="nw")
-        self.delayMessageFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="ne")
+        self.delayMessageFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="nw")
 
         # Camera Side Frame
             # Camera Connect Frame
@@ -497,7 +497,7 @@ class WidgetGallery():
         self.camExtFrame.grid(column=2, row=1, padx=5, pady=5, sticky="w")
 
         self.camConnFrame.grid(column=0, row=0, padx=5, pady=5, sticky="w")
-        self.camFileFrame.grid(column=0, row=1, padx=5, pady=5, sticky="ne")
+        self.camFileFrame.grid(column=0, row=1, padx=5, pady=5, sticky="nw")
 
             # Experimental Setup Frame
 
@@ -599,7 +599,7 @@ class WidgetGallery():
         self.timepointTable.grid(column=0, row=2, padx=5, pady=5, sticky="w")
         self.stepHistoryTable.grid(column=1, row=2, columnspan=2, padx=5, pady=5, sticky="e")
 
-        self.experimentStatFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="nse")
+        self.experimentStatFrame.grid(column=0, row=2, columnspan=2, padx=5, pady=5, sticky="nsw")
 
             # Cancel Frame
 
@@ -1825,6 +1825,8 @@ class TimepointMaker():
 
     def __init__(self, parent=None):
         self.mainWindow = ttkthemes.ThemedTk(background=True,toplevel=True,theme="equilux")
+        self.mainWindow.option_add('*foreground', 'white')
+        self.mainWindow.option_add('*background', 'grey')
         self.mainWindow.title("Make Timepoints")
         icon = PhotoImage(file = './Icons/UEMtomaton_icon_32.png')
         self.mainWindow.grid_rowconfigure(0, weight=1)
@@ -1929,18 +1931,23 @@ class TimepointMaker():
         self.mainWindow.mainloop()
 
     def destroyWindow(self,event):
-        self.entryWindow.destroy()
+        entryVar1 = self.entry1.get()
+        entryVar2 = self.entry2.get()
+        entryVar3 = self.entry3.get()
+        if (entryVar1 != "" and entryVar2 != "" and entryVar3 != "" and float(entryVar3) != 0):
+            valInt = int(math.floor(abs((float(entryVar2) - float(entryVar1))) / float(entryVar3)))
 
-    def destroyButtonClick(self):
+            addValue = valInt
+            if (self.includeLast.get() == 1):
+                addValue = valInt + 1
+
+            self.timeTree.insert('','end',values=(entryVar1,entryVar2,entryVar3,str(addValue)))
+        else:
+            self.timeTree.insert('','end',values=(entryVar1,entryVar2,entryVar3,""))
         self.entryWindow.destroy()
 
     def addRow(self):
-        treeSelection = self.timeTree.focus()
-
         self.entryWindow = ttkthemes.ThemedTk(background=True,toplevel=True,theme="equilux")
-        self.entryVar1 = tk.StringVar()
-        self.entryVar2 = tk.StringVar()
-        self.entryVar3 = tk.StringVar()
         self.entryLabel1 = ttk.Label(
             self.entryWindow,
             text="Start point"
@@ -1954,16 +1961,13 @@ class TimepointMaker():
             text="Separation"
         )
         self.entry1 = ttk.Entry(
-            self.entryWindow,
-            textvariable=self.entryVar1
+            self.entryWindow
         )
         self.entry2 = ttk.Entry(
-            self.entryWindow,
-            textvariable=self.entryVar2
+            self.entryWindow
         )
         self.entry3 = ttk.Entry(
-            self.entryWindow,
-            textvariable=self.entryVar3
+            self.entryWindow
         )
         self.entry1.bind("<Return>", self.destroyWindow)
         self.entry2.bind("<Return>", self.destroyWindow)
@@ -1971,7 +1975,7 @@ class TimepointMaker():
         self.entryButton = ttk.Button(
             self.entryWindow,
             text="Submit",
-            command=lambda: self.destroyButtonClick()
+            command=lambda: self.destroyWindow()
         )
         self.entryButton.bind("<Return>", self.destroyWindow)
 
@@ -1987,19 +1991,6 @@ class TimepointMaker():
         self.entry1.focus()
 
         self.entryWindow.wait_window()
-
-        entries = [self.entryVar1.get(), self.entryVar2.get(), self.entryVar3.get(), '']
-
-        if (self.entryVar1.get() != "" and self.entryVar2.get() != "" and self.entryVar3.get() != "" and float(self.entryVar3.get()) != 0):
-            valInt = int(math.floor(abs((float(self.entryVar2.get()) - float(self.entryVar1.get()))) / float(self.entryVar3.get())))
-
-            addValue = valInt
-            if (self.includeLast.get() == 1):
-                addValue = valInt + 1
-            
-            self.timeTree.insert('','end',values=(self.entryVar1.get(),self.entryVar2.get(),self.entryVar3.get(),str(addValue)))
-        else:
-            self.timeTree.insert('','end',values=(self.entryVar1.get(),self.entryVar2.get(),self.entryVar3.get(),""))
 
     def saveTimepoints_Click(self):
         f = filedialog.asksaveasfile(mode="w", defaultextension=".txt")
@@ -2092,11 +2083,10 @@ class TimepointMaker():
 
         f.close()
 
-        print("Saved times and returning.\n")
-
         self.mainWindow.quit()
         self.mainWindow.destroy()
-        print("Window destroyed.\n")
+
+        print("Saved times and returning.\n")
 
     def deleteRow(self):
         selected = self.timeTree.focus()
