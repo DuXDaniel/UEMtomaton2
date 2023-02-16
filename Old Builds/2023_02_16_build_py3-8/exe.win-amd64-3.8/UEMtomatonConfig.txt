@@ -1,6 +1,0 @@
-0
-127.0.0.1
-C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
-C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
-C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
-127.0.0.1
