@@ -39,8 +39,12 @@ class XPSObj(object):
 
     def processMovementFile(self):
         f = open('movementCommFile.txt','r')
-        posMov = float(f.readline())
-        compStat = int(f.readline())
+        try:
+            posMov = float(f.readline())
+            compStat = int(f.readline())
+        except:
+            posMov = 0
+            compStat = 1
         f.close()
 
         return posMov, compStat

@@ -33,7 +33,7 @@ class WidgetGallery():
         self.cycleNum = 1 # number of cycles in the run
         self.runStat = 0 # indicates the status of a currently running scan. 0 indicates not running. 1 indicates running. 2 indicates a pause. 3 indicates a stop command which will switch to 0.
         self.randomized = 0 # indicates whether timepoints are randomized
-        self.curExpArr = []
+        self.expArr = []
         self.fullTimeptArr = []
         self.SIS_acq_time = -1 # selective in situ mode acquisition time
         self.SIS_time_between = -1 # selective in situe mode time skipped between saves
@@ -699,7 +699,7 @@ class WidgetGallery():
 
             self.firstPause = 1
 
-            self.totImages = self.totPoints * (self.cycleNum + 1) # The total number of images including the number of times the scan is to be repeated.
+            self.totImages = self.totPoints * self.cycleNum # The total number of images including the number of times the scan is to be repeated.
 
             for item in self.stepHistoryTable.get_children():
                 self.stepHistoryTable.delete(item)
@@ -950,6 +950,8 @@ class WidgetGallery():
                     self.experTimeRemainStatus.config(text=msg[1])
                 elif msg[0] == 5:
                     self.experTimeRemainStatus.config(text="Complete")
+                elif msg[0] == 6:
+                    self.stepHistoryTable.set(self.stepHistoryTable.get_children(msg[1]),2,msg[2])
 
                     self.experProgBar['maximum'] = 1
                     self.experProgBar['value'] = 0
@@ -1213,14 +1215,14 @@ class WidgetGallery():
         self.mainWindow.after(100, self.commDelayStat_DoWork)
         DelValCommToCamThread(self, self.delValCommQueue).start()
         
-        #upStat = "Initializing scan runner thread.\r\n"
-        #self.delayMessageBox.insert('end',str(datetime.datetime.now())+": "+upStat) 
+        upStat = "Initializing scan runner thread.\r\n"
+        self.delayMessageBox.insert('end',str(datetime.datetime.now())+": "+upStat) 
 
-        #self.keepScanRunThread = 1
-        #self.mainWindow.after(1000, self.ScanRunner_DoWork)
-        #DelayRunnerThread(self,self.delayRunnerQueue).start()
+        self.keepScanRunThread = 1
+        self.mainWindow.after(1000, self.ScanRunner_DoWork)
+        DelayRunnerThread(self,self.delayRunnerQueue).start()
 
-        #self.delayMessageBox.insert('end',str(datetime.datetime.now())+": "+"Ready for scan.\r\n")
+        self.delayMessageBox.insert('end',str(datetime.datetime.now())+": "+"Ready for scan.\r\n")
 
     ''' DisconServ_Click
         Close all sockets and execute WSACleanup. Cancel the delay-value communication thread.
@@ -1463,7 +1465,7 @@ class DelayRunnerThread(threading.Thread):
                 upStat = [0]
                 self.queue.put(upStat)
 
-            if (camComm_buffer[0] == '1'):
+            if (camComm_buffer != '' and camComm_buffer[0] == '1'):
                 rundel = 1
             else:
                 rundel = 0
@@ -1479,9 +1481,15 @@ class DelayRunnerThread(threading.Thread):
                 self.queue.put(upStat)
 
                 f = open('movementCommFile.txt','w')
-                f.write(self.root.curDistPoint + "\n")
+                f.write(str(self.root.curDistPoint) + "\n")
                 f.write("0")
                 f.close()
+                
+                if (path.exists("movementCommFile.txt")):
+                    f = open("movementCommFile.txt","r")
+                    f.readline()
+                    completionStatus = f.readline()
+                    completionValue = int(completionStatus)
 
                 while (completionValue != 1):
                     if (path.exists("movementCommFile.txt")):
@@ -1492,7 +1500,7 @@ class DelayRunnerThread(threading.Thread):
 
                     time.sleep(5)
 
-                camComm_buffer[0] = '1'
+                camComm_buffer = '1'
 
                 try:
                     self.root.commCamCommand.send(camComm_buffer.encode())
@@ -1586,7 +1594,7 @@ class CamRunnerThread(threading.Thread):
         if (row == 1):
             f = open(Filename,"w")
 
-            f.write("[Info Directory\t]\t" + val1 + "\n")
+            f.write("[Info Directory\t]\t" + val1.replace('/','\\') + "\n")
             f.write("[Base Name ]\t" + val2 + "\n")
             f.write("[Date\t]\t" + str(curtime))
             f.write("[Number of Steps\t]\t" + val4 + "\n" + "[Number of Scans\t]\t" + val5 + "\n")
@@ -1608,7 +1616,7 @@ class CamRunnerThread(threading.Thread):
     def AcqCommWriter(self, Filename, val1, val2, val3, val4, val5, val6):
         f = open(Filename,"w")
 
-        f.write(val1 + "/\n\0")
+        f.write(val1.replace('/','\\') + "\n\0")
         f.write(val2 + "\n\0")
         f.write(val3 + "\n\0")
         f.write(val4 + "\n\0")
@@ -1658,26 +1666,21 @@ class CamRunnerThread(threading.Thread):
                     upStat = [0,'end',str(datetime.datetime.now())+": "+"Invalid experimental parameters.\r\n"]
                     self.queue.put(upStat)
                 else:
-                    curTimePoint = self.root.curExpArr[self.curScanStep]
-                    curDistPoint = curTimePoint / self.root.mm_to_ps + self.root.curZero
+                    self.curTimePoint = self.root.expArr[self.curScanStep]
+                    self.curDistPoint = self.curTimePoint / self.root.mm_to_ps + self.root.curZero
 
                     stepString = str(self.curScanStep + 1)
-                    timeString = str(curTimePoint)
-                    posString = str(curDistPoint)
+                    timeString = str(self.curTimePoint)
+                    posString = str(self.curDistPoint)
                     statString = "Moving delay stage...\r\n"
-
-                    upStat = [1,'end',(stepString,timeString,posString,statString)]
+                    
+                    upStat = [1,'end',(stepString,timeString,'',statString,)]
                     self.queue.put(upStat)
 
-                    timeVal = str(self.root.curExpArr[self.curScanStep])
+                    timeVal = str(self.root.expArr[self.curScanStep])
 
                     camComm_buffer = '1'
-
-                    for a in range(1,timeVal.length()+1):
-                        camComm_buffer[a] = timeVal[a - 1]
-
-                    camComm_buffer[timeVal.length() + 1] = '|'
-                    camComm_buffer[timeVal.length() + 2] = '\0'
+                    camComm_buffer += timeVal
 
                     try:
                         self.root.camCommand_client.send(camComm_buffer.encode())
@@ -1694,7 +1697,7 @@ class CamRunnerThread(threading.Thread):
                         upStat = [-1]
                         self.queue.put(upStat)
 
-                    camComm_buffer = ''
+                    camComm_buffer = '-1'
 
                     recvSignal = 0
 
@@ -1727,30 +1730,33 @@ class CamRunnerThread(threading.Thread):
                 # write all the camera communication files and wait for acquisition before moving on
                 
                 # ADJUST FOR DECIMAL DELAYS, WITH LIMITER TO A SINGLE DECIMAL PLACE
-                self.curDelay = self.root.curTimePoint
-                self.curPos = self.root.curDistPoint
+                self.curDelay = self.curTimePoint
+                self.curPos = self.curDistPoint
                 if (self.curDelay % 1 != 0):
                     self.curDelay = round(self.curDelay * 10)
                     self.delayText = "d" + str(int(self.curDelay))
                 else:
-                    delayText = str(int(self.curDelay))
+                    self.delayText = str(int(self.curDelay))
 
-                curFileName = self.root.camFilebaseEntry.get().strip() + "_" + str(self.curScan) + "_" + str(self.curScanStep + 1) + "_" + delayText
+                curFileName = self.root.camFilebaseEntry.get().strip() + "_" + str(self.curScan) + "_" + str(self.curScanStep + 1) + "_" + self.delayText
                 curFileTot = self.root.camFilepathEntry.get().strip() + curFileName
-                ulgFileName = self.root.camFilepathEntry.get().strip() + self.root.camFilebaseEntry.get().strip() + ".ulg"
+                ulgFileName = self.root.camFilepathEntry.get().strip().replace('/','\\') + "\\" + self.root.camFilebaseEntry.get().strip() + ".ulg"
+
+                upstat = [6,'end',curFileName]
+                self.queue.put(upStat)
                 
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating DM communication for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
                 # UPDATE CAMERA COMMUNICATION DOCUMENT
-                self.AcqCommWriter("AcquisitionSettings.txt", self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), str(self.curScanStep + 1), delayText, str(self.curScan), str(self.curPos))
+                self.AcqCommWriter("AcquisitionSettings.txt", self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), str(self.curScanStep + 1), self.delayText, str(self.curScan), str(self.curPos))
 
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating ULG file for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
 
                 # UPDATE ULG
-                self.ULGWriter(ulgFileName, self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), curFileName, str(self.totPoints), str(self.cycleNum), str(self.curScan), str(self.curScanStep + 1), str(self.curStep + 1), str(self.curDelay))
+                self.ULGWriter(ulgFileName, self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), curFileName, str(self.root.totPoints), str(self.root.cycleNum), str(self.curScan), str(self.curScanStep + 1), str(self.curStep + 1), str(self.curDelay))
 
-                upStat = [0,'end',str(datetime.datetime.now())+": "+"Waiting to see image name " + curFileTot + " for step " + str(self.curStep + 1) + ".\r\n"]
+                upStat = [0,'end',str(datetime.datetime.now())+": "+"Waiting for acquisition of " + curFileTot + " for step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
                 
                 self.AcqCommStat("AcqStat.txt",'0')
@@ -1811,8 +1817,6 @@ class CamRunnerThread(threading.Thread):
         except:
             upStat = [-1]
             self.queue.put(upStat)
-
-        camComm_buffer = ''
 
         upStat = [0,'end',str(datetime.datetime.now())+": "+"Scan complete.\r\n"]
         self.queue.put(upStat)

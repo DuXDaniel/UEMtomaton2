@@ -1,6 +1,6 @@
-0
+0.0
 127.0.0.1
-C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
-C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
+C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton 2.0/UEMtomaton/UEMtomatonCameraAcquisition.py
+C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton 2.0/UEMtomaton/SISScript.py
 C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton_NPXPS-D_AHK/UEMtomaton/emptyTestScript.txt
 127.0.0.1
