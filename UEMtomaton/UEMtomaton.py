@@ -943,7 +943,10 @@ class WidgetGallery():
                 elif msg[0] == 1:
                     self.stepHistoryTable.insert("",msg[1],values=msg[2])
                 elif msg[0] == 2:
-                    self.stepHistoryTable.set(self.stepHistoryTable.get_children(msg[1]),3,msg[2])
+                    rowInterest = self.stepHistoryTable.get_children()[-1]
+                    rowValues = self.stepHistoryTable.item(rowInterest)['values']
+                    rowValues[3] = msg[2]
+                    self.stepHistoryTable.item(self.stepHistoryTable.get_children()[-1], values=rowValues)
                 elif msg[0] == 3:
                     self.experProgBar['value'] = msg[1]
                 elif msg[0] == 4:
@@ -951,7 +954,10 @@ class WidgetGallery():
                 elif msg[0] == 5:
                     self.experTimeRemainStatus.config(text="Complete")
                 elif msg[0] == 6:
-                    self.stepHistoryTable.set(self.stepHistoryTable.get_children(msg[1]),2,msg[2])
+                    rowInterest = self.stepHistoryTable.get_children()[-1]
+                    rowValues = self.stepHistoryTable.item(rowInterest)['values']
+                    rowValues[2] = msg[2]
+                    self.stepHistoryTable.item(self.stepHistoryTable.get_children()[-1], values=rowValues)
 
                     self.experProgBar['maximum'] = 1
                     self.experProgBar['value'] = 0
@@ -1756,7 +1762,7 @@ class CamRunnerThread(threading.Thread):
                 # UPDATE ULG
                 self.ULGWriter(ulgFileName, self.root.camFilepathEntry.get().strip(), self.root.camFilebaseEntry.get().strip(), curFileName, str(self.root.totPoints), str(self.root.cycleNum), str(self.curScan), str(self.curScanStep + 1), str(self.curStep + 1), str(self.curDelay))
 
-                upStat = [0,'end',str(datetime.datetime.now())+": "+"Waiting for acquisition of " + curFileTot + " for step " + str(self.curStep + 1) + ".\r\n"]
+                upStat = [0,'end',str(datetime.datetime.now())+": "+"Waiting for acquisition of step " + str(self.curStep + 1) + ".\r\n"]
                 self.queue.put(upStat)
                 
                 self.AcqCommStat("AcqStat.txt",'0')
@@ -1802,7 +1808,7 @@ class CamRunnerThread(threading.Thread):
                 self.cumulTime = self.cumulTime + addTime
                 timePer = self.cumulTime / (self.curStep + 1)
 
-                timeLeft = round(timePer * (self.root.totPoints*(self.root.cycleNum+1) - self.curStep))
+                timeLeft = round(timePer * (self.root.totPoints*(self.root.cycleNum) - self.curStep))
                 upStat = [4,str(int(timeLeft)) + " sec"]
                 self.queue.put(upStat)
 
