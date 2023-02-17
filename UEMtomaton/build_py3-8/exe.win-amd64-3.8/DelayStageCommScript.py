@@ -67,8 +67,7 @@ class XPSObj(object):
             f = open('positionFile.txt','w')
             posRef = [0.]
             res = self.myXPS.GroupPositionCurrentGet('Group1',posRef,1)
-            pos = res[1]
-            f.write(str(pos[0]))
+            f.write(str(posRef))
             f.close()
             time.sleep(1) # pause every 100 ms, don't need the crazy granularity
 
