@@ -14,9 +14,10 @@ from CommandInterfaceXPS import *
 # Create XPS interface with myXPS = XPS()
 
 class XPSObj(object):
-    checkLoop = 0
 
     def XPS_Open (self, address, port):
+        self.checkLoop = 0
+        self.curMov = 0
         # Create XPS interface
         self.myXPS = XPS()
         print(self.myXPS)
@@ -64,17 +65,19 @@ class XPSObj(object):
 
     def signalPosition(self): # async
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2):
-            f = open('positionFile.txt','w')
-            posRef = [0.]
-            res = self.myXPS.GroupPositionCurrentGet('Group1',posRef,1)
-            f.write(str(posRef))
-            f.close()
-            time.sleep(1) # pause every 100 ms, don't need the crazy granularity
+            if (self.curMov == 0):
+                f = open('positionFile.txt','w')
+                posRef = [0.]
+                res = self.myXPS.GroupPositionCurrentGet('Group1',posRef,1)
+                f.write(str(posRef))
+                f.close()
+                time.sleep(1) # pause every 100 ms, don't need the crazy granularity
 
     def orderLoop(self): #async
         while(self.myXPS.IsDeviceConnected() and self.checkLoop != 2):
             posMov, compStat = self.processMovementFile()
             if (compStat == 0):
+                self.curMov = 1
                 self.myXPS.GroupMoveAbsolute('Group1',[posMov],1)
                 res = self.myXPS.GroupStatusGet('Group1')
                 stat = res[1]
@@ -83,6 +86,7 @@ class XPSObj(object):
                     stat = res[1]
                     time.sleep(2)
                 self.indicateCompletedMovement(posMov)
+                self.curMov = 0
             time.sleep(1) # pause every 100 ms, don't need the crazy granularity
 
     def initOrderLoop(self):
