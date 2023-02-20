@@ -1,6 +1,7 @@
 import math
 import time
 import sys
+sys.coinit_flags = 2  # COINIT_APARTMENTTHREADED
 import socket
 import subprocess
 import random
@@ -8,6 +9,7 @@ import datetime
 import threading
 import queue
 import pywinauto
+import json
 import os.path as path
 import numpy as np
 import tkinter as tk
@@ -137,7 +139,7 @@ class Stage_Mover():
             variable=self.distributeVar,
             offvalue=0,
             onvalue=1,
-            text='Linear',
+            text='Linear (takes max)',
             command=lambda: self.linearRadio_Switch()
         )
         self.meshedCheck = tk.Checkbutton(
@@ -181,6 +183,14 @@ class Stage_Mover():
             text="Estimated Time Remaining:"
         )
         self.estTimeVal = ttk.Label(
+            self.mainWindow,
+            text="---"
+        )
+        self.statLabel = ttk.Label(
+            self.mainWindow,
+            text="Status"
+        )
+        self.statText = ttk.Label(
             self.mainWindow,
             text="---"
         )
@@ -228,28 +238,44 @@ class Stage_Mover():
         self.initButton.grid(column=1, row=9, columnspan=2, padx=5, pady=5, sticky="nswe")
 
         self.experProgBar.grid(column=0, row=10, columnspan=4, padx=5, pady=5, sticky="nswe")
-        self.estTimeLabel.grid(column=1, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.estTimeVal.grid(column=2, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.estTimeLabel.grid(column=0, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.estTimeVal.grid(column=1, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statLabel.grid(column=2, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statText.grid(column=3, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
 
         self.mainWindow.mainloop()
         
-    def PressKey(keypress):
+    def PressKey(self,keypress):
         ###### Press on keyboard the passed request
         pywinauto.keyboard.send_keys(keypress,pause=0.05)
         time.sleep(0.1)
 
-    def MoveMouse(x,y):
-        pywinauto.mouse.move((x,y))
+    def MoveMouse(self,x,y):
+        pywinauto.mouse.move(coords=(x,y))
         time.sleep(0.1)
 
-    def ClickMouse():
+    def ClickMouse(self):
         pywinauto.mouse.click()
         time.sleep(0.1)
 
-    def FocusTheDesiredWnd():
+    def FocusTheDesiredWnd(self):
         searchApp = pywinauto.application.Application()
         try:
-            searchApp.connect(title_re=r'.*xT microscope Control.*')
+            searchApp.connect(title_re=r'.*Word.*')
+            #searchApp.connect(title_re=r'.*xT microscope Control.*')
+            
+            restoreApp = searchApp.top_window()
+            restoreApp.minimize()
+            restoreApp.restore()
+            restoreApp.set_focus()
+            return restoreApp
+        except:
+            return 0
+            
+    def FocusPaint(self):
+        searchApp = pywinauto.application.Application()
+        try:
+            searchApp.connect(title_re=r'.*Paint.*')
             
             restoreApp = searchApp.top_window()
             restoreApp.minimize()
@@ -260,13 +286,9 @@ class Stage_Mover():
             return 0
 
     def browsePath_Click(self):
-        try:
-            self.imgDirectory = filedialog.askdirectory(title="Select the file path for the images to be saved in")
-            self.filepathEntry.delete(0, "end")
-            self.filepathEntry.insert(0, self.imgDirectory)
-        except:
-            pass
-        return
+        imgDirectory = filedialog.askdirectory(title="Select the file path for the images to be saved in")
+        self.filepathEntry.delete(0, "end")
+        self.filepathEntry.insert(0, imgDirectory)
 
     def linearRadio_Switch(self):
         self.distributeVar.set(value=0)
@@ -293,54 +315,162 @@ class Stage_Mover():
         return
 
     def runScan(self):
-        filepath = f.readline()
-        filebase = f.readline()
-        x_start = f.readline()
-        x_end = f.readline()
-        x_steps = f.readline()
-        y_start = f.readline()
-        y_end = f.readline()
-        y_steps = f.readline()
-        z_start = f.readline()
-        z_end = f.readline()
-        z_steps = f.readline()
-        tilt_start = f.readline()
-        tilt_end = f.readline()
-        tilt_steps = f.readline()
-        rot_start = f.readline()
-        rot_end = f.readline()
-        rot_steps = f.readline()
-        dist_method = f.readline()
-        acq_style = f.readline()
+        filepath = self.filepathEntry.get().strip()
+        filebase = self.filebaseEntry.get().strip()
+        x_start = float(self.xStartEntry.get().strip())
+        x_end = float(self.xEndEntry.get().strip())
+        x_steps = int(self.xStepEntry.get().strip())
+        y_start = float(self.yStartEntry.get().strip())
+        y_end = float(self.yEndEntry.get().strip())
+        y_steps = int(self.yStepEntry.get().strip())
+        z_start = float(self.zStartEntry.get().strip())
+        z_end = float(self.zEndEntry.get().strip())
+        z_steps = int(self.zStepEntry.get().strip())
+        tilt_start = float(self.tiltStartEntry.get().strip())
+        tilt_end = float(self.tiltEndEntry.get().strip())
+        tilt_steps = int(self.tiltStepEntry.get().strip())
+        rot_start = float(self.rotStartEntry.get().strip())
+        rot_end = float(self.rotEndEntry.get().strip())
+        rot_steps = int(self.rotStepEntry.get().strip())
+        dist_method = self.distributeVar.get()
+        acq_style = self.acqParamVar.get()
+
+        self.statText.config(text="Building points")
+
+        if (dist_method == 1):
+            stepCount = max([x_steps, y_steps, z_steps, tilt_steps, rot_steps])
+            x_range = np.linspace(x_start,x_end,stepCount)
+            y_range = np.linspace(y_start,y_end,stepCount)
+            z_range = np.linspace(z_start,z_end,stepCount)
+            tilt_range = np.linspace(tilt_start,tilt_end,stepCount)
+            rot_range = np.linspace(rot_start,rot_end,stepCount)
+        elif (dist_method == 0):
+            x_init_range = np.linspace(x_start,x_end,x_steps)
+            y_init_range = np.linspace(y_start,y_end,y_steps)
+            z_init_range = np.linspace(z_start,z_end,z_steps)
+            tilt_init_range = np.linspace(tilt_start,tilt_end,tilt_steps)
+            rot_init_range = np.linspace(rot_start,rot_end,rot_steps)
+            x_mesh, y_mesh, z_mesh, tilt_mesh, rot_mesh = np.meshgrid(x_init_range, y_init_range, z_init_range, tilt_init_range, rot_init_range)
+            
+            x_range = x_mesh.flatten()
+            y_range = y_mesh.flatten()
+            z_range = z_mesh.flatten()
+            tilt_range = tilt_mesh.flatten()
+            rot_range = rot_mesh.flatten()
+            stepCount = len(x_range)
+ 
+        points_taken = {
+            "x_range": x_range.tolist(),
+            "y_range": y_range.tolist(),
+            "z_range": z_range.tolist(),
+            "tilt_range": tilt_range.tolist(),
+            "rot_range": rot_range.tolist()
+        }
+
+        json_object = json.dumps(points_taken)
+
+        with open(filepath + "\\" + filebase + "_acq_points.json", "w") as outfile:
+            outfile.write(json_object)
 
         hFoundWnd = self.FocusTheDesiredWnd()
 
-        ############# make next section about establishing the number of required steps
+        steps = np.arange(stepCount)
 
-        ############# iterate through steps
-        while (curStat == "1"):
+        last_x = -5000
+        last_y = -5000
+        last_z = -5000
+        last_tilt = -5000
+        last_rot = -5000
 
-            if (statLine == "0"):
-                hFoundWnd = FocusTheDesiredWnd()
-                if(hFoundWnd != 0):
+        cumulTime = 0
 
+        self.experProgBar['maximum'] = len(steps)-1
 
-                    filename = filepath + "\\" + filebase + "_" + curScan + "_" + curScanStep + "_" + curDelay + ".tif"
+        for curStep in steps:
+            st = time.time()
+            # Moving stage
+            self.statText.config(text="Moving stage")
+            hFoundWnd = self.FocusTheDesiredWnd()
+            if(hFoundWnd != 0):
+                self.MoveMouse(1584+15,52+15)
+                self.ClickMouse()
+                if (x_range[curStep] != last_x):  
+                    self.MoveMouse(1648+58,183+12)
+                    self.ClickMouse()
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(x_range[curStep]))
+                    last_x = x_range[curStep]
+                if (y_range[curStep] != last_y):
+                    self.MoveMouse(1648+58,215+12)
+                    self.ClickMouse()
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(y_range[curStep]))
+                    last_y = y_range[curStep]
+                if (z_range[curStep] != last_z):
+                    self.MoveMouse(1648+58,246+12)
+                    self.ClickMouse()
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(z_range[curStep]))
+                    last_z = z_range[curStep]
+                if (tilt_range[curStep] != last_tilt):
+                    self.MoveMouse(1648+58,278+12)
+                    self.ClickMouse()
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(tilt_range[curStep]))
+                    last_tilt = tilt_range[curStep]
+                if (rot_range[curStep] != last_rot):
+                    self.MoveMouse(1648+58,309+12)
+                    self.ClickMouse()
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(rot_range[curStep]))
+                    last_rot = rot_range[curStep]
+                
+                self.MoveMouse(1757+50,145+12)
+                self.ClickMouse()
+            else:
+                print("Cannot find microscope control. Exiting.")
+                break
 
-                    PressKey('{VK_F2}')
+            self.mainWindow.focus_force()
+            time.sleep(10)
+            self.statText.config(text="Acquiring")
 
-                    time.sleep(USER_INP + 5)
+            # Saving
+            hFoundWnd = self.FocusTheDesiredWnd()
+            if(hFoundWnd != 0):
+                filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + ".tif"
 
-                    quadfile = filename
-                    PressKey(quadfile)
-                    PressKey('{VK_RETURN}')
+                if (acq_style == 1):
+                    #self.PressKey('{VK_F4}')
+                    time.sleep(3)
+                elif (acq_style == 0):
+                    #self.PressKey('{VK_F2}')
+                    time.sleep(60)
 
-                else:
-                    print("Cannot find microscope control. Exiting.")
-                    curStat = 0
+                quadfile = filename
+                self.PressKey(quadfile)
+                self.PressKey('{VK_RETURN}')
 
+            else:
+                print("Cannot find microscope control. Exiting.")
+                break
 
-            time.sleep(0.5)
+            self.PressKey('{PRTSC}')
+            self.FocusPaint()
+            self.PressKey('^v')
+            self.PressKey('{VK_F12}')
+            ss_filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + "_ss.png"
+            self.PressKey(ss_filename)
+            self.PressKey('{VK_RETURN}')
+
+            et = time.time()
+            cumulTime = cumulTime + et - st
+            avgPerImg = cumulTime/(curStep+1)
+            estTimeRemain = avgPerImg*(len(steps)-(curStep+1))
+            self.estTimeVal.config(text=str(estTimeRemain) + " s")
+            self.experProgBar['value'] = curStep
+
+        self.statText.config(text="Finished")
         return
 
     def saveButton_Click(self):
@@ -377,7 +507,34 @@ class Stage_Mover():
         self.xStartEntry.insert(0, f.readline())
         self.xEndEntry.delete(0, "end")
         self.xEndEntry.insert(0, f.readline())
-        
+        self.xStepEntry.delete(0, "end")
+        self.xStepEntry.insert(0, f.readline())
+        self.yStartEntry.delete(0, "end")
+        self.yStartEntry.insert(0, f.readline())
+        self.yEndEntry.delete(0, "end")
+        self.yEndEntry.insert(0, f.readline())
+        self.yStepEntry.delete(0, "end")
+        self.yStepEntry.insert(0, f.readline())
+        self.zStartEntry.delete(0, "end")
+        self.zStartEntry.insert(0, f.readline())
+        self.zEndEntry.delete(0, "end")
+        self.zEndEntry.insert(0, f.readline())
+        self.zStepEntry.delete(0, "end")
+        self.zStepEntry.insert(0, f.readline())
+        self.tiltStartEntry.delete(0, "end")
+        self.tiltStartEntry.insert(0, f.readline())
+        self.tiltEndEntry.delete(0, "end")
+        self.tiltEndEntry.insert(0, f.readline())
+        self.tiltStepEntry.delete(0, "end")
+        self.tiltStepEntry.insert(0, f.readline())
+        self.rotStartEntry.delete(0, "end")
+        self.rotStartEntry.insert(0, f.readline())
+        self.rotEndEntry.delete(0, "end")
+        self.rotEndEntry.insert(0, f.readline())
+        self.rotStepEntry.delete(0, "end")
+        self.rotStepEntry.insert(0, f.readline())
+        self.distributeVar.set(int(f.readline()))
+        self.acqParamVar.set(int(f.readline()))
         f.close()
         return
 

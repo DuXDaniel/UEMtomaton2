@@ -1,0 +1,19 @@
+C:/Users/dudan/Desktop/Work/Columbia/Software/UEMtomaton 2.0/Stage_Move_Acquisition/TestImages
+test_01
+0
+10
+10
+0
+10
+10
+0
+0
+1
+0
+0
+1
+0
+0
+1
+1
+1
