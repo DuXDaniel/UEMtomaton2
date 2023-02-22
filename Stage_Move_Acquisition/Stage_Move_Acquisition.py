@@ -254,8 +254,8 @@ class Stage_Mover():
         pywinauto.mouse.move(coords=(x,y))
         time.sleep(0.1)
 
-    def ClickMouse(self):
-        pywinauto.mouse.click()
+    def ClickMouse(self,x,y):
+        pywinauto.mouse.click(coords=(x,y))
         time.sleep(0.1)
 
     def FocusTheDesiredWnd(self):
@@ -272,10 +272,10 @@ class Stage_Mover():
         except:
             return 0
             
-    def FocusPaint(self):
+    def FocusSnip(self):
         searchApp = pywinauto.application.Application()
         try:
-            searchApp.connect(title_re=r'.*Paint.*')
+            searchApp.connect(title_re=r'.*Snipping.*')
             
             restoreApp = searchApp.top_window()
             restoreApp.minimize()
@@ -392,41 +392,34 @@ class Stage_Mover():
             self.statText.config(text="Moving stage")
             hFoundWnd = self.FocusTheDesiredWnd()
             if(hFoundWnd != 0):
-                self.MoveMouse(1584+15,52+15)
-                self.ClickMouse()
+                self.ClickMouse(1584+15,52+15)
                 if (x_range[curStep] != last_x):  
-                    self.MoveMouse(1648+58,183+12)
-                    self.ClickMouse()
+                    self.ClickMouse(1648+58,183+12)
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(x_range[curStep]))
                     last_x = x_range[curStep]
                 if (y_range[curStep] != last_y):
-                    self.MoveMouse(1648+58,215+12)
-                    self.ClickMouse()
+                    self.ClickMouse(1648+58,215+12)
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(y_range[curStep]))
                     last_y = y_range[curStep]
                 if (z_range[curStep] != last_z):
-                    self.MoveMouse(1648+58,246+12)
-                    self.ClickMouse()
+                    self.ClickMouse(1648+58,246+12)
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(z_range[curStep]))
                     last_z = z_range[curStep]
                 if (tilt_range[curStep] != last_tilt):
-                    self.MoveMouse(1648+58,278+12)
-                    self.ClickMouse()
+                    self.ClickMouse(1648+58,278+12)
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(tilt_range[curStep]))
                     last_tilt = tilt_range[curStep]
                 if (rot_range[curStep] != last_rot):
-                    self.MoveMouse(1648+58,309+12)
-                    self.ClickMouse()
+                    self.ClickMouse(1648+58,309+12)
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(rot_range[curStep]))
                     last_rot = rot_range[curStep]
                 
-                self.MoveMouse(1757+50,145+12)
-                self.ClickMouse()
+                self.ClickMouse(1757+50,145+12)
             else:
                 print("Cannot find microscope control. Exiting.")
                 break
@@ -441,10 +434,10 @@ class Stage_Mover():
                 filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + ".tif"
 
                 if (acq_style == 1):
-                    #self.PressKey('{VK_F4}')
+                    self.PressKey('{VK_F4}')
                     time.sleep(3)
                 elif (acq_style == 0):
-                    #self.PressKey('{VK_F2}')
+                    self.PressKey('{VK_F2}')
                     time.sleep(60)
 
                 quadfile = filename
@@ -455,10 +448,16 @@ class Stage_Mover():
                 print("Cannot find microscope control. Exiting.")
                 break
 
-            self.PressKey('{PRTSC}')
-            self.FocusPaint()
-            self.PressKey('^v')
-            self.PressKey('{VK_F12}')
+            # Saving screenshot (must use Snipping Tool because Paint is not installed?????????? FEI?????)
+            self.FocusSnip()
+            self.PressKey('^n')
+            time.sleep(1)
+            pywinauto.mouse.press(coords=(0,0))
+            time.sleep(0.5)
+            pywinauto.mouse.release(coords=(1920,1200))
+            self.MoveMouse(500,500)
+            time.sleep(1)
+            self.PressKey('^s')
             ss_filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + "_ss.png"
             self.PressKey(ss_filename)
             self.PressKey('{VK_RETURN}')
