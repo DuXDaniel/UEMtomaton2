@@ -133,6 +133,21 @@ class Stage_Mover():
             self.mainWindow
         )
 
+        self.WDLabel = ttk.Label(
+            self.mainWindow,
+            text="Working Distance: ",
+            justify="right"
+        )
+        self.WDStartEntry = ttk.Entry(
+            self.mainWindow
+        )
+        self.WDEndEntry = ttk.Entry(
+            self.mainWindow
+        )
+        self.WDStepEntry = ttk.Entry(
+            self.mainWindow
+        )
+
         self.distributeVar = tk.IntVar(value=1)
         self.linearCheck = tk.Checkbutton(
             self.mainWindow,
@@ -228,20 +243,25 @@ class Stage_Mover():
         self.rotStartEntry.grid(column=1, row=6, rowspan=1, padx=5, pady=5, sticky="nswe")
         self.rotEndEntry.grid(column=2, row=6, rowspan=1, padx=5, pady=5, sticky="nswe")
         self.rotStepEntry.grid(column=3, row=6, rowspan=1, padx=5, pady=5, sticky="nswe")
+        
+        self.WDLabel.grid(column=0, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.WDStartEntry.grid(column=1, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.WDEndEntry.grid(column=2, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.WDStepEntry.grid(column=3, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
 
-        self.linearCheck.grid(column=1, row=7, padx=5, pady=5, sticky="nswe")
-        self.meshedCheck.grid(column=2, row=7, padx=5, pady=5, sticky="nswe")
+        self.linearCheck.grid(column=1, row=8, padx=5, pady=5, sticky="nswe")
+        self.meshedCheck.grid(column=2, row=8, padx=5, pady=5, sticky="nswe")
 
-        self.snapshotCheck.grid(column=1, row=8, padx=5, pady=5, sticky="nswe")
-        self.fullAcqCheck.grid(column=2, row=8, padx=5, pady=5, sticky="nswe")
+        self.snapshotCheck.grid(column=1, row=9, padx=5, pady=5, sticky="nswe")
+        self.fullAcqCheck.grid(column=2, row=9, padx=5, pady=5, sticky="nswe")
 
-        self.initButton.grid(column=1, row=9, columnspan=2, padx=5, pady=5, sticky="nswe")
+        self.initButton.grid(column=1, row=10, columnspan=2, padx=5, pady=5, sticky="nswe")
 
-        self.experProgBar.grid(column=0, row=10, columnspan=4, padx=5, pady=5, sticky="nswe")
-        self.estTimeLabel.grid(column=0, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.estTimeVal.grid(column=1, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statLabel.grid(column=2, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statText.grid(column=3, row=11, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.experProgBar.grid(column=0, row=11, columnspan=4, padx=5, pady=5, sticky="nswe")
+        self.estTimeLabel.grid(column=0, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.estTimeVal.grid(column=1, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statLabel.grid(column=2, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statText.grid(column=3, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
 
         self.mainWindow.mainloop()
         
@@ -332,31 +352,37 @@ class Stage_Mover():
         rot_start = float(self.rotStartEntry.get().strip())
         rot_end = float(self.rotEndEntry.get().strip())
         rot_steps = int(self.rotStepEntry.get().strip())
+        WD_start = float(self.WDStartEntry.get().strip())
+        WD_end = float(self.WDEndEntry.get().strip())
+        WD_steps = int(self.WDStepEntry.get().strip())
         dist_method = self.distributeVar.get()
         acq_style = self.acqParamVar.get()
 
         self.statText.config(text="Building points")
 
         if (dist_method == 1):
-            stepCount = max([x_steps, y_steps, z_steps, tilt_steps, rot_steps])
+            stepCount = max([x_steps, y_steps, z_steps, tilt_steps, rot_steps, WD_steps])
             x_range = np.linspace(x_start,x_end,stepCount)
             y_range = np.linspace(y_start,y_end,stepCount)
             z_range = np.linspace(z_start,z_end,stepCount)
             tilt_range = np.linspace(tilt_start,tilt_end,stepCount)
             rot_range = np.linspace(rot_start,rot_end,stepCount)
+            WD_range = np.linspace(WD_start,WD_end,stepCount)
         elif (dist_method == 0):
             x_init_range = np.linspace(x_start,x_end,x_steps)
             y_init_range = np.linspace(y_start,y_end,y_steps)
             z_init_range = np.linspace(z_start,z_end,z_steps)
             tilt_init_range = np.linspace(tilt_start,tilt_end,tilt_steps)
             rot_init_range = np.linspace(rot_start,rot_end,rot_steps)
-            x_mesh, y_mesh, z_mesh, tilt_mesh, rot_mesh = np.meshgrid(x_init_range, y_init_range, z_init_range, tilt_init_range, rot_init_range)
+            WD_init_range = np.linspace(WD_start,WD_end,stepCount)
+            x_mesh, y_mesh, z_mesh, tilt_mesh, rot_mesh, WD_mesh = np.meshgrid(x_init_range, y_init_range, z_init_range, tilt_init_range, rot_init_range, WD_init_range)
             
             x_range = x_mesh.flatten()
             y_range = y_mesh.flatten()
             z_range = z_mesh.flatten()
             tilt_range = tilt_mesh.flatten()
             rot_range = rot_mesh.flatten()
+            WD_range = WD_mesh.flatten()
             stepCount = len(x_range)
  
         points_taken = {
@@ -364,7 +390,8 @@ class Stage_Mover():
             "y_range": y_range.tolist(),
             "z_range": z_range.tolist(),
             "tilt_range": tilt_range.tolist(),
-            "rot_range": rot_range.tolist()
+            "rot_range": rot_range.tolist(),
+            "WD_range": WD_range.tolist()
         }
 
         json_object = json.dumps(points_taken)
@@ -381,6 +408,7 @@ class Stage_Mover():
         last_z = -5000
         last_tilt = -5000
         last_rot = -5000
+        last_WD = -5000
 
         cumulTime = 0
 
@@ -418,6 +446,14 @@ class Stage_Mover():
                     self.PressKey('+{VK_HOME}')
                     self.PressKey(str(rot_range[curStep]))
                     last_rot = rot_range[curStep]
+                if (WD_range[curStep] != last_WD):
+                    self.ClickMouse()########################################################
+                    self.ClickMouse()########################################################
+                    pywinauto.mouse.doubleclick()########################################################
+                    self.PressKey('+{VK_HOME}')
+                    self.PressKey(str(WD_range[curStep]))
+                    self.PressKey('{VK_RETURN}')
+                    last_rot = WD_range[curStep]
                 
                 self.ClickMouse(1757+50,145+12)
             else:
@@ -491,6 +527,9 @@ class Stage_Mover():
         f.write(self.rotStartEntry.get().strip() + "\n")
         f.write(self.rotEndEntry.get().strip() + "\n")
         f.write(self.rotStepEntry.get().strip() + "\n")
+        f.write(self.WDStartEntry.get().strip() + "\n")
+        f.write(self.WDEndEntry.get().strip() + "\n")
+        f.write(self.WDStepEntry.get().strip() + "\n")
         f.write(str(self.distributeVar.get()) + "\n")
         f.write(str(self.acqParamVar.get()))
         return
@@ -531,7 +570,13 @@ class Stage_Mover():
         self.rotEndEntry.delete(0, "end")
         self.rotEndEntry.insert(0, f.readline())
         self.rotStepEntry.delete(0, "end")
-        self.rotStepEntry.insert(0, f.readline())
+        self.WDStepEntry.insert(0, f.readline())
+        self.WDStartEntry.delete(0, "end")
+        self.WDStartEntry.insert(0, f.readline())
+        self.WDEndEntry.delete(0, "end")
+        self.WDEndEntry.insert(0, f.readline())
+        self.WDStepEntry.delete(0, "end")
+        self.WDStepEntry.insert(0, f.readline())
         self.distributeVar.set(int(f.readline()))
         self.acqParamVar.set(int(f.readline()))
         f.close()
