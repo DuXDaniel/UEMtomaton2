@@ -166,6 +166,36 @@ class Stage_Mover():
             command=lambda: self.meshRadio_Switch()
         )
 
+        self.quadVar = tk.IntVar(value=0)
+        self.quad1Check = tk.Checkbutton(
+            self.mainWindow,
+            variable=self.quadVar,
+            onvalue=0,
+            text='Quad 1',
+            command=lambda: self.snapRadio_Switch()
+        )
+        self.quad2Check = tk.Checkbutton(
+            self.mainWindow,
+            variable=self.quadVar,
+            onvalue=1,
+            text='Quad 2',
+            command=lambda: self.snapRadio_Switch()
+        )
+        self.quad3Check = tk.Checkbutton(
+            self.mainWindow,
+            variable=self.quadVar,
+            onvalue=2,
+            text='Quad 3',
+            command=lambda: self.snapRadio_Switch()
+        )
+        self.quad4Check = tk.Checkbutton(
+            self.mainWindow,
+            variable=self.quadVar,
+            onvalue=3,
+            text='Quad 4',
+            command=lambda: self.snapRadio_Switch()
+        )
+
         self.acqParamVar = tk.IntVar(value=1)
         self.snapshotCheck = tk.Checkbutton(
             self.mainWindow,
@@ -251,17 +281,22 @@ class Stage_Mover():
 
         self.linearCheck.grid(column=1, row=8, padx=5, pady=5, sticky="nswe")
         self.meshedCheck.grid(column=2, row=8, padx=5, pady=5, sticky="nswe")
+        
+        self.quad1Check.grid(column=0, row=9, padx=5, pady=5, sticky="nswe")
+        self.quad2Check.grid(column=1, row=9, padx=5, pady=5, sticky="nswe")
+        self.quad3Check.grid(column=2, row=9, padx=5, pady=5, sticky="nswe")
+        self.quad4Check.grid(column=3, row=9, padx=5, pady=5, sticky="nswe")
 
-        self.snapshotCheck.grid(column=1, row=9, padx=5, pady=5, sticky="nswe")
-        self.fullAcqCheck.grid(column=2, row=9, padx=5, pady=5, sticky="nswe")
+        self.snapshotCheck.grid(column=1, row=10, padx=5, pady=5, sticky="nswe")
+        self.fullAcqCheck.grid(column=2, row=10, padx=5, pady=5, sticky="nswe")
 
-        self.initButton.grid(column=1, row=10, columnspan=2, padx=5, pady=5, sticky="nswe")
+        self.initButton.grid(column=1, row=11, columnspan=2, padx=5, pady=5, sticky="nswe")
 
-        self.experProgBar.grid(column=0, row=11, columnspan=4, padx=5, pady=5, sticky="nswe")
-        self.estTimeLabel.grid(column=0, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.estTimeVal.grid(column=1, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statLabel.grid(column=2, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statText.grid(column=3, row=12, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.experProgBar.grid(column=0, row=12, columnspan=4, padx=5, pady=5, sticky="nswe")
+        self.estTimeLabel.grid(column=0, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.estTimeVal.grid(column=1, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statLabel.grid(column=2, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statText.grid(column=3, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
 
         self.mainWindow.mainloop()
         
@@ -447,13 +482,20 @@ class Stage_Mover():
                     self.PressKey(str(rot_range[curStep]))
                     last_rot = rot_range[curStep]
                 if (WD_range[curStep] != last_WD):
-                    self.ClickMouse()########################################################
-                    self.ClickMouse()########################################################
-                    pywinauto.mouse.doubleclick()########################################################
-                    self.PressKey('+{VK_HOME}')
-                    self.PressKey(str(WD_range[curStep]))
-                    self.PressKey('{VK_RETURN}')
-                    last_rot = WD_range[curStep]
+                    if (quadVar == 0):
+                        self.ClickMouse(252+30,603+19)
+                        self.ClickMouse(250+43,580+10)
+                        pywinauto.mouse.double_click(coords=(425+30,557+6))
+                        self.PressKey(str(WD_range[curStep]))
+                        self.PressKey('{VK_RETURN}')
+                        last_rot = WD_range[curStep]
+                    elif (quadVar == 1):
+                        self.ClickMouse(1024+30,603+19)
+                        self.ClickMouse(1025+43,580+10)
+                        pywinauto.mouse.double_click(coords=(1197+30,557+6))
+                        self.PressKey(str(WD_range[curStep]))
+                        self.PressKey('{VK_RETURN}')
+                        last_rot = WD_range[curStep]
                 
                 self.ClickMouse(1757+50,145+12)
             else:
@@ -531,6 +573,7 @@ class Stage_Mover():
         f.write(self.WDEndEntry.get().strip() + "\n")
         f.write(self.WDStepEntry.get().strip() + "\n")
         f.write(str(self.distributeVar.get()) + "\n")
+        f.write(str(self.quadVar.get()) + "\n")
         f.write(str(self.acqParamVar.get()))
         return
 
@@ -578,6 +621,7 @@ class Stage_Mover():
         self.WDStepEntry.delete(0, "end")
         self.WDStepEntry.insert(0, f.readline())
         self.distributeVar.set(int(f.readline()))
+        self.quadVar.set(int(f.readline()))
         self.acqParamVar.set(int(f.readline()))
         f.close()
         return
