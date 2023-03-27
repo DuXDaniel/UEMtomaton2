@@ -16,7 +16,7 @@ def PressKey(keypress):
 def FocusTheDesiredWnd():
     searchApp = pywinauto.application.Application()
     try:
-        searchApp.connect(title_re=r'.*xT microscope Control.*')
+        searchApp.connect(title_re=r'.*xT microscope Control.*', found_index = 0)
         
         restoreApp = searchApp.top_window()
         restoreApp.minimize()
