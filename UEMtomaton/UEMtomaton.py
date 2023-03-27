@@ -745,6 +745,7 @@ class WidgetGallery():
         curLine = f.readline()
 
         includeLastLoad = int(curLine)
+        self.fullTimeptArr = []
 
         for curLine in f:
             curLine = curLine.strip()
@@ -762,14 +763,21 @@ class WidgetGallery():
 
             if (seg[0] != "" and seg[1] != "" and seg[2] != "" and float(seg[2]) != 0):
                 valInt = int(math.floor(abs((float(seg[1]) - float(seg[0]))) / float(seg[2])))
+                
+                firstParam = float(seg[0])
+                lastParam = float(seg[1])
+                if (float(seg[1]) > float(seg[0])):
+                    sepParam = abs(float(seg[2]))
+                else:
+                    sepParam = -1*abs(float(seg[2]))
          
                 addValue = valInt
                 if (includeLastLoad == 1):
                     addValue = addValue + 1
-                    self.curTimeptArr = np.arange(float(seg[0]),float(seg[1]),float(seg[2]))
-                    self.curTimeptArr.append(seg[1])
+                    self.curTimeptArr = np.arange(firstParam,lastParam,sepParam)
+                    self.curTimeptArr.append(lastParam)
                 else:
-                    self.curTimeptArr = np.arange(float(seg[0]),float(seg[1]),float(seg[2]))
+                    self.curTimeptArr = np.arange(firstParam,lastParam,sepParam)
                 
                 self.fullTimeptArr.append(self.curTimeptArr)
 
@@ -1737,7 +1745,7 @@ class CamRunnerThread(threading.Thread):
                 self.curDelay = self.curTimePoint
                 self.curPos = self.curDistPoint
                 if (self.curDelay % 1 != 0):
-                    self.curDelay = round(self.curDelay * 10)
+                    self.curDelay = round(self.curDelay * 1000)
                     self.delayText = "d" + str(int(self.curDelay))
                 else:
                     self.delayText = str(int(self.curDelay))
@@ -1940,6 +1948,22 @@ class TimepointMaker():
         
         self.mainWindow.mainloop()
 
+    def pressSubmit(self):
+        entryVar1 = self.entry1.get()
+        entryVar2 = self.entry2.get()
+        entryVar3 = self.entry3.get()
+        if (entryVar1 != "" and entryVar2 != "" and entryVar3 != "" and float(entryVar3) != 0):
+            valInt = int(math.floor(abs((float(entryVar2) - float(entryVar1))) / float(entryVar3)))
+
+            addValue = valInt
+            if (self.includeLast.get() == 1):
+                addValue = valInt + 1
+
+            self.timeTree.insert('','end',values=(entryVar1,entryVar2,entryVar3,str(addValue)))
+        else:
+            self.timeTree.insert('','end',values=(entryVar1,entryVar2,entryVar3,""))
+        self.entryWindow.destroy()
+
     def destroyWindow(self,event):
         entryVar1 = self.entry1.get()
         entryVar2 = self.entry2.get()
@@ -1985,7 +2009,7 @@ class TimepointMaker():
         self.entryButton = ttk.Button(
             self.entryWindow,
             text="Submit",
-            command=lambda: self.destroyWindow()
+            command=lambda: self.pressSubmit()
         )
         self.entryButton.bind("<Return>", self.destroyWindow)
 
