@@ -148,6 +148,23 @@ class Stage_Mover():
             self.mainWindow
         )
 
+        self.MoveTimeLabel = ttk.Label(
+            self.mainWindow,
+            text="Movement Time(s): ",
+            justify="right"
+        )
+        self.MoveTimeEntry = ttk.Entry(
+            self.mainWindow
+        )
+        self.AcqTimeLabel = ttk.Label(
+            self.mainWindow,
+            text="Acquisition Time(s): ",
+            justify="right"
+        )
+        self.AcqTimeEntry = ttk.Entry(
+            self.mainWindow
+        )
+
         self.distributeVar = tk.IntVar(value=1)
         self.linearCheck = tk.Checkbutton(
             self.mainWindow,
@@ -279,44 +296,46 @@ class Stage_Mover():
         self.WDEndEntry.grid(column=2, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
         self.WDStepEntry.grid(column=3, row=7, rowspan=1, padx=5, pady=5, sticky="nswe")
 
-        self.linearCheck.grid(column=1, row=8, padx=5, pady=5, sticky="nswe")
-        self.meshedCheck.grid(column=2, row=8, padx=5, pady=5, sticky="nswe")
+        self.MoveTimeLabel.grid(column=0, row=8, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.MoveTimeEntry.grid(column=1, row=8, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.AcqTimeLabel.grid(column=2, row=8, rowspan=1, padx=5, pady=5, sticky="nswe")
+        self.AcqTimeEntry.grid(column=3, row=8, rowspan=1, padx=5, pady=5, sticky="nswe")
+
+        self.linearCheck.grid(column=1, row=9, padx=5, pady=5, sticky="nswe")
+        self.meshedCheck.grid(column=2, row=9, padx=5, pady=5, sticky="nswe")
         
-        self.quad1Check.grid(column=0, row=9, padx=5, pady=5, sticky="nswe")
-        self.quad2Check.grid(column=1, row=9, padx=5, pady=5, sticky="nswe")
-        self.quad3Check.grid(column=2, row=9, padx=5, pady=5, sticky="nswe")
-        self.quad4Check.grid(column=3, row=9, padx=5, pady=5, sticky="nswe")
+        self.quad1Check.grid(column=0, row=10, padx=5, pady=5, sticky="nswe")
+        self.quad2Check.grid(column=1, row=10, padx=5, pady=5, sticky="nswe")
+        self.quad3Check.grid(column=2, row=10, padx=5, pady=5, sticky="nswe")
+        self.quad4Check.grid(column=3, row=10, padx=5, pady=5, sticky="nswe")
 
-        self.snapshotCheck.grid(column=1, row=10, padx=5, pady=5, sticky="nswe")
-        self.fullAcqCheck.grid(column=2, row=10, padx=5, pady=5, sticky="nswe")
+        self.snapshotCheck.grid(column=1, row=11, padx=5, pady=5, sticky="nswe")
+        self.fullAcqCheck.grid(column=2, row=11, padx=5, pady=5, sticky="nswe")
 
-        self.initButton.grid(column=1, row=11, columnspan=2, padx=5, pady=5, sticky="nswe")
+        self.initButton.grid(column=1, row=12, columnspan=2, padx=5, pady=5, sticky="nswe")
 
-        self.experProgBar.grid(column=0, row=12, columnspan=4, padx=5, pady=5, sticky="nswe")
-        self.estTimeLabel.grid(column=0, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.estTimeVal.grid(column=1, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statLabel.grid(column=2, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
-        self.statText.grid(column=3, row=13, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.experProgBar.grid(column=0, row=13, columnspan=4, padx=5, pady=5, sticky="nswe")
+        self.estTimeLabel.grid(column=0, row=14, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.estTimeVal.grid(column=1, row=14, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statLabel.grid(column=2, row=14, columnspan=1, padx=5, pady=5, sticky="nswe")
+        self.statText.grid(column=3, row=14, columnspan=1, padx=5, pady=5, sticky="nswe")
 
         self.mainWindow.mainloop()
         
     def PressKey(self,keypress):
         ###### Press on keyboard the passed request
         pywinauto.keyboard.send_keys(keypress,pause=0.05)
-        time.sleep(0.1)
 
     def MoveMouse(self,x,y):
         pywinauto.mouse.move(coords=(x,y))
-        time.sleep(0.1)
 
     def ClickMouse(self,x,y):
         pywinauto.mouse.click(coords=(x,y))
-        time.sleep(0.1)
 
     def FocusTheDesiredWnd(self):
         searchApp = pywinauto.application.Application()
+        searchApp.connect(title_re=r'.*Word.*', found_index=0)
         try:
-            searchApp.connect(title_re=r'.*Word.*')
             #searchApp.connect(title_re=r'.*xT microscope Control.*')
             
             restoreApp = searchApp.top_window()
@@ -330,7 +349,7 @@ class Stage_Mover():
     def FocusSnip(self):
         searchApp = pywinauto.application.Application()
         try:
-            searchApp.connect(title_re=r'.*Snipping.*')
+            searchApp.connect(title_re=r'.*Snipping.*', found_index=0)
             
             restoreApp = searchApp.top_window()
             restoreApp.minimize()
@@ -448,6 +467,7 @@ class Stage_Mover():
         cumulTime = 0
 
         self.experProgBar['maximum'] = len(steps)-1
+        print(int(self.quadVar.get()))
 
         for curStep in steps:
             st = time.time()
@@ -482,20 +502,20 @@ class Stage_Mover():
                     self.PressKey(str(rot_range[curStep]))
                     last_rot = rot_range[curStep]
                 if (WD_range[curStep] != last_WD):
-                    if (quadVar == 0):
+                    if (int(self.quadVar.get()) == 0):
                         self.ClickMouse(252+30,603+19)
                         self.ClickMouse(250+43,580+10)
                         pywinauto.mouse.double_click(coords=(425+30,557+6))
                         self.PressKey(str(WD_range[curStep]))
                         self.PressKey('{VK_RETURN}')
-                        last_rot = WD_range[curStep]
-                    elif (quadVar == 1):
+                        last_WD = WD_range[curStep]
+                    elif (int(self.quadVar.get()) == 1):
                         self.ClickMouse(1024+30,603+19)
                         self.ClickMouse(1025+43,580+10)
                         pywinauto.mouse.double_click(coords=(1197+30,557+6))
                         self.PressKey(str(WD_range[curStep]))
                         self.PressKey('{VK_RETURN}')
-                        last_rot = WD_range[curStep]
+                        last_WD = WD_range[curStep]
                 
                 self.ClickMouse(1757+50,145+12)
             else:
@@ -503,7 +523,7 @@ class Stage_Mover():
                 break
 
             self.mainWindow.focus_force()
-            time.sleep(10)
+            time.sleep(float(self.MoveTimeEntry.get().strip()) + 0.5)
             self.statText.config(text="Acquiring")
 
             # Saving
@@ -512,11 +532,11 @@ class Stage_Mover():
                 filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + ".tif"
 
                 if (acq_style == 1):
-                    self.PressKey('{VK_F4}')
-                    time.sleep(3)
+                    #self.PressKey('{VK_F4}')
+                    time.sleep(float(self.AcqTimeEntry.get().strip())+2)
                 elif (acq_style == 0):
-                    self.PressKey('{VK_F2}')
-                    time.sleep(60)
+                    #self.PressKey('{VK_F2}')
+                    time.sleep(float(self.AcqTimeEntry.get().strip())+2)
 
                 quadfile = filename
                 self.PressKey(quadfile)
@@ -527,18 +547,18 @@ class Stage_Mover():
                 break
 
             # Saving screenshot (must use Snipping Tool because Paint is not installed?????????? FEI?????)
-            self.FocusSnip()
-            self.PressKey('^n')
-            time.sleep(1)
-            pywinauto.mouse.press(coords=(0,0))
-            time.sleep(0.5)
-            pywinauto.mouse.release(coords=(1920,1200))
-            self.MoveMouse(500,500)
-            time.sleep(1)
-            self.PressKey('^s')
-            ss_filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + "_ss.png"
-            self.PressKey(ss_filename)
-            self.PressKey('{VK_RETURN}')
+            # self.FocusSnip()
+            # self.PressKey('^n')
+            # time.sleep(1)
+            # pywinauto.mouse.press(coords=(0,0))
+            # time.sleep(0.5)
+            # pywinauto.mouse.release(coords=(1920,1200))
+            # self.MoveMouse(500,500)
+            # time.sleep(1)
+            # self.PressKey('^s')
+            # ss_filename = filepath.replace('/','\\') + "\\" + filebase + "_" + str(curStep) + "_ss.png"
+            # self.PressKey(ss_filename)
+            # self.PressKey('{VK_RETURN}')
 
             et = time.time()
             cumulTime = cumulTime + et - st
@@ -572,9 +592,11 @@ class Stage_Mover():
         f.write(self.WDStartEntry.get().strip() + "\n")
         f.write(self.WDEndEntry.get().strip() + "\n")
         f.write(self.WDStepEntry.get().strip() + "\n")
+        f.write(self.MoveTimeEntry.get().strip() + "\n")
+        f.write(self.AcqTimeEntry.get().strip() + "\n")
         f.write(str(self.distributeVar.get()) + "\n")
         f.write(str(self.quadVar.get()) + "\n")
-        f.write(str(self.acqParamVar.get()))
+        f.write(str(self.acqParamVar.get()) + "\n")
         return
 
     def loadButton_Click(self):
@@ -613,16 +635,20 @@ class Stage_Mover():
         self.rotEndEntry.delete(0, "end")
         self.rotEndEntry.insert(0, f.readline())
         self.rotStepEntry.delete(0, "end")
-        self.WDStepEntry.insert(0, f.readline())
+        self.rotStepEntry.insert(0, f.readline())
         self.WDStartEntry.delete(0, "end")
         self.WDStartEntry.insert(0, f.readline())
         self.WDEndEntry.delete(0, "end")
         self.WDEndEntry.insert(0, f.readline())
         self.WDStepEntry.delete(0, "end")
         self.WDStepEntry.insert(0, f.readline())
-        self.distributeVar.set(int(f.readline()))
-        self.quadVar.set(int(f.readline()))
-        self.acqParamVar.set(int(f.readline()))
+        self.MoveTimeEntry.delete(0, "end")
+        self.MoveTimeEntry.insert(0, f.readline())
+        self.AcqTimeEntry.delete(0, "end")
+        self.AcqTimeEntry.insert(0, f.readline())
+        self.distributeVar.set(value = int(f.readline()))
+        self.quadVar.set(value = int(f.readline()))
+        self.acqParamVar.set(value = int(f.readline()))
         f.close()
         return
 

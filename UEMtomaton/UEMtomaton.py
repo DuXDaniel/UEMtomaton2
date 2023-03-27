@@ -1789,6 +1789,10 @@ class CamRunnerThread(threading.Thread):
                     elif (self.root.pauseButPress == 1):
                         if (self.root.runStat != 3):###############################################
                             self.root.runStat = 2
+                elif (statLine == "2"):
+                    self.root.runStat = 2
+                    upStat = [2,'end','Pausing']
+                    self.queue.put(upStat)
                 else:
                     self.root.runStat = 3
                     upStat = [2,'end','Error']
