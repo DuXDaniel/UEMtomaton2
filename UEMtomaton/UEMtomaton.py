@@ -30,6 +30,8 @@ class WidgetGallery():
         self.positionFeedback = 0.
         self.delayConnected = 0
         self.butPressMeantime = 0 # indicates whether a button has been pressed while a run is occuring (pause, play, or stop 
+        self.pauseButPress = 0
+        self.stopButPress = 0
         self.cycleNum = 1 # number of cycles in the run
         self.runStat = 0 # indicates the status of a currently running scan. 0 indicates not running. 1 indicates running. 2 indicates a pause. 3 indicates a stop command which will switch to 0.
         self.randomized = 0 # indicates whether timepoints are randomized
@@ -951,9 +953,10 @@ class WidgetGallery():
                 elif msg[0] == 1:
                     self.stepHistoryTable.insert("",msg[1],values=msg[2])
                 elif msg[0] == 2:
-                    childVals = self.stepHistoryTable.get_children()[msg[1]].values
+                    treeChild = self.stepHistoryTable.get_children()[msg[1]]
+                    childVals = self.stepHistoryTable.item(treeChild)['values']
                     childVals[3] = msg[2]
-                    self.stepHistoryTable.item(self.stepHistoryTable.get_children()[msg[1]], values=childVals)
+                    self.stepHistoryTable.item(treeChild, values=childVals)
                 elif msg[0] == 3:
                     self.experProgBar['value'] = msg[1]
                 elif msg[0] == 4:
@@ -964,9 +967,10 @@ class WidgetGallery():
                     self.experProgBar['maximum'] = 1
                     self.experProgBar['value'] = 0
                 elif msg[0] == 6:
-                    childVals = self.stepHistoryTable.get_children()[msg[1]].values
+                    treeChild = self.stepHistoryTable.get_children()[msg[1]]
+                    childVals = self.stepHistoryTable.item(treeChild)['values']
                     childVals[2] = msg[2]
-                    self.stepHistoryTable.item(self.stepHistoryTable.get_children()[msg[1]], values=childVals)
+                    self.stepHistoryTable.item(treeChild, values=childVals)
             except:
                 pass
 
@@ -979,30 +983,26 @@ class WidgetGallery():
         Sets the pause state if another button has not already been pressed.
     '''
     def PauseButton_Click(self):
-        if (self.butPressMeantime != 1):
+        if (self.stopButPress == 0):
             if (self.pauseButPress == 0):
                 self.pauseButPress = 1
-                self.butPressMeantime = 1
                 self.camPauseButton(text="▶")
             elif (self.pauseButPress == 1):
                 self.pauseButPress = 0
-                self.butPressMeantime = 0
                 self.camPauseButton(text="⏸")
 
     ''' PlayRun_Click
         Resumes the scan if another button has not already been pressed.
     '''
     def PlayRun_Click(self):
-        if (self.butPressMeantime != 1):
-            self.runStat = 1
-            self.butPressMeantime = 1
+        if (self.stopButPress == 0 and self.pauseButPress == 1):
+            self.pauseButPress = 0
 
     ''' StopButton_Click
         Stops the scan.
     '''
     def StopButton_Click(self):
-        self.runStat = 3
-        self.butPressMeantime = 1
+        self.stopButPress = 1
     
     ''' BrowseFilePath_Click
         Browses for a directory to store DM images in
@@ -1657,13 +1657,14 @@ class CamRunnerThread(threading.Thread):
                 upStat = [-1]
                 self.queue.put(upStat)
 
-            self.root.butPressMeantime = 0
             camComm_buffer = ''
 
             timeTrack = time.time()
 
             addTime = timeTrack - timeInit
             self.cumulTime = self.cumulTime + addTime
+
+            self.nextRunStat = 1
 
             if (self.root.runStat == 1): # Moving delay stage step and preparing for acquisition
                 timeInit = time.time()
@@ -1713,11 +1714,18 @@ class CamRunnerThread(threading.Thread):
 
                     recvSignal = 0
 
-                    if (self.root.butPressMeantime == 0):
+                    if (self.root.pauseButPress == 0 and self.root.stopButPress == 0):
                         self.root.runStat = 4
                     else:
-                        if (self.root.runStat != 3):########################################
+                        if (self.root.pauseButPress == 1):########################################
                             self.root.runStat = 2
+                            upStat = [2,'end','Pausing']
+                            self.queue.put(upStat)
+                            self.nextRunStat = 4
+                        elif (self.root.stopButPress == 1):
+                            self.root.runStat = 3
+                            upStat = [2,'end','Stopped']
+                            self.queue.put(upStat)
 
                 timeTrack = time.time()
 
@@ -1729,6 +1737,9 @@ class CamRunnerThread(threading.Thread):
                     upStat = [0,'end',str(datetime.datetime.now())+": "+"Paused on step " + str(self.curStep + 1) + ".\r\n"]
                     self.queue.put(upStat)
                     self.root.firstPause = 0
+
+                if (self.root.pauseButPress == 0):
+                    self.root.runStat = self.nextRunStat
             elif (self.root.runStat == 3): # Stop signal detected
                 # Stop signal, stops and clears everything.
                 self.curStep = self.root.totImages
@@ -1784,15 +1795,23 @@ class CamRunnerThread(threading.Thread):
                 if (statLine == "1"):
                     upStat = [2,'end','Acquired']
                     self.queue.put(upStat)
-                    if (self.root.butPressMeantime == 0):
+                    if (self.root.pauseButPress == 0 and self.root.stopButPress == 0):
                         self.root.runStat = 1
-                    elif (self.root.pauseButPress == 1):
-                        if (self.root.runStat != 3):###############################################
+                    else:
+                        if (self.root.pauseButPress == 1):########################################
                             self.root.runStat = 2
+                            upStat = [2,'end','Pausing']
+                            self.queue.put(upStat)
+                            self.nextRunStat = 1
+                        elif (self.root.stopButPress == 1):
+                            self.root.runStat = 3
+                            upStat = [2,'end','Stopped']
+                            self.queue.put(upStat)
                 elif (statLine == "2"):
                     self.root.runStat = 2
                     upStat = [2,'end','Pausing']
                     self.queue.put(upStat)
+                    self.nextRunStat = 1
                 else:
                     self.root.runStat = 3
                     upStat = [2,'end','Error']
