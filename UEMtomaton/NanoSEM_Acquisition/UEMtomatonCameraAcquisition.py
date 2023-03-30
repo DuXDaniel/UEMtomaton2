@@ -38,12 +38,19 @@ def main(argv):
     f = open("AcqStat.txt",'r')
     statLine = f.readline()
     f.close()
+
+    re_align_time = 600 # seconds before realigning the photoelectrons
+
+    st = time.time()
+    prev_statLine = "1"
     while (statLine != "-1"):
         f = open("AcqStat.txt",'r')
         statLine = f.readline()
         f.close()
 
         if (statLine == "0"):
+            if (prev_statLine == "2"):
+                st = time.time()
             hFoundWnd = FocusTheDesiredWnd()
             if(hFoundWnd != 0):
                 f = open("AcquisitionSettings.txt",'r')
@@ -100,9 +107,18 @@ def main(argv):
                 PressKey('{VK_RETURN}')
                 # Add shutter close command to pump
 
-                f = open("AcqStat.txt",'w')
-                f.write("1")
-                f.close()
+                et = time.time()
+
+                if (et-st > re_align_time):
+                    f = open("AcqStat.txt",'w')
+                    f.write("2")
+                    f.close()
+                    prev_statLine = "2"
+                else:
+                    f = open("AcqStat.txt",'w')
+                    f.write("1")
+                    f.close()
+                    prev_statLine = "1"
             else:
                 f = open("AcqStat.txt",'w')
                 f.write("-1")
