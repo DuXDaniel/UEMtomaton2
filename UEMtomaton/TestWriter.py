@@ -30,7 +30,8 @@ stepHistoryTable.grid(column=0, row=0, columnspan=1, padx=5, pady=5, sticky="e")
 stepHistoryTable.insert("",'end',values=["blahblahblah","asdf","asdf","asdf"])
 childVals = stepHistoryTable.get_children()[0]
 childVals2 = stepHistoryTable.item(childVals)['values']
-childVals2[3] = 'blah'
+childVals2[3] = 'C:/asdf/asdf/asdf/asdf/t345/nergnowerihg/34t/gra/fbn/adfs'
+childVals2[3] = childVals2[3].replace('/','\\')
 print(childVals2)
 #stepHistoryTable.delete(childVals)
 #childVals[3] = "asdf"

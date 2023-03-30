@@ -986,10 +986,10 @@ class WidgetGallery():
         if (self.stopButPress == 0):
             if (self.pauseButPress == 0):
                 self.pauseButPress = 1
-                self.camPauseButton(text="▶")
+                self.camPauseButton.config(text="▶")
             elif (self.pauseButPress == 1):
                 self.pauseButPress = 0
-                self.camPauseButton(text="⏸")
+                self.camPauseButton.config(text="⏸")
 
     ''' PlayRun_Click
         Resumes the scan if another button has not already been pressed.
@@ -1702,7 +1702,7 @@ class CamRunnerThread(threading.Thread):
                         self.queue.put(upStat)
                     
                     statString = "Acquiring...\r\n"
-                    upStat = [2,'end',statString]
+                    upStat = [2,self.curStep,statString]
 
                     try:
                         camComm_buffer = self.root.camCommand_client.recv(1024).decode()
@@ -1719,13 +1719,9 @@ class CamRunnerThread(threading.Thread):
                     else:
                         if (self.root.pauseButPress == 1):########################################
                             self.root.runStat = 2
-                            upStat = [2,'end','Pausing']
-                            self.queue.put(upStat)
                             self.nextRunStat = 4
                         elif (self.root.stopButPress == 1):
                             self.root.runStat = 3
-                            upStat = [2,'end','Stopped']
-                            self.queue.put(upStat)
 
                 timeTrack = time.time()
 
@@ -1765,7 +1761,7 @@ class CamRunnerThread(threading.Thread):
                 curFileTot = self.root.camFilepathEntry.get().strip() + curFileName
                 ulgFileName = self.root.camFilepathEntry.get().strip().replace('/','\\') + "\\" + self.root.camFilebaseEntry.get().strip() + ".ulg"
 
-                upstat = [6,'end',curFileName]
+                upstat = [6,self.curStep,curFileName]
                 self.queue.put(upStat)
                 
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating DM communication for step " + str(self.curStep + 1) + ".\r\n"]
@@ -1793,29 +1789,21 @@ class CamRunnerThread(threading.Thread):
                     time.sleep(self.root.wait/2)
 
                 if (statLine == "1"):
-                    upStat = [2,'end','Acquired']
+                    upStat = [2,self.curStep,'Acquired']
                     self.queue.put(upStat)
                     if (self.root.pauseButPress == 0 and self.root.stopButPress == 0):
                         self.root.runStat = 1
                     else:
                         if (self.root.pauseButPress == 1):########################################
                             self.root.runStat = 2
-                            upStat = [2,'end','Pausing']
-                            self.queue.put(upStat)
                             self.nextRunStat = 1
                         elif (self.root.stopButPress == 1):
                             self.root.runStat = 3
-                            upStat = [2,'end','Stopped']
-                            self.queue.put(upStat)
                 elif (statLine == "2"):
                     self.root.runStat = 2
-                    upStat = [2,'end','Pausing']
-                    self.queue.put(upStat)
                     self.nextRunStat = 1
                 else:
                     self.root.runStat = 3
-                    upStat = [2,'end','Error']
-                    self.queue.put(upStat)
 
                 toCounter = 0
 
