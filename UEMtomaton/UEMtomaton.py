@@ -1710,19 +1710,20 @@ class CamRunnerThread(threading.Thread):
                         upStat = [-1]
                         self.queue.put(upStat)
 
-                    camComm_buffer = '-1'
-
-                    recvSignal = 0
-
-                    if (self.root.pauseButPress == 0 and self.root.stopButPress == 0):
-                        self.root.runStat = 4
+                    if (camComm_buffer == "2"):
+                        self.root.PauseButton_Click()
+                    elif (camComm_buffer == "3"):
+                        self.root.runStat = 3
                     else:
-                        if (self.root.pauseButPress == 1):########################################
-                            self.root.runStat = 2
-                            self.nextRunStat = 4
-                        elif (self.root.stopButPress == 1):
-                            self.root.runStat = 3
+                        if (self.root.pauseButPress == 0 and self.root.stopButPress == 0):
+                            self.root.runStat = 4
+                        else:
+                            if (self.root.pauseButPress == 1):
+                                self.root.runStat = 2
+                            elif (self.root.stopButPress == 1):
+                                self.root.runStat = 3
 
+                    self.nextRunStat = 4
                 timeTrack = time.time()
 
                 addTime = timeTrack - timeInit
@@ -1796,12 +1797,10 @@ class CamRunnerThread(threading.Thread):
                     else:
                         if (self.root.pauseButPress == 1):########################################
                             self.root.runStat = 2
-                            self.nextRunStat = 1
                         elif (self.root.stopButPress == 1):
                             self.root.runStat = 3
                 elif (statLine == "2"):
-                    self.root.runStat = 2
-                    self.nextRunStat = 1
+                    self.root.PauseButton_Click()
                 else:
                     self.root.runStat = 3
 
@@ -1828,6 +1827,8 @@ class CamRunnerThread(threading.Thread):
                 timeLeft = round(timePer * (self.root.totPoints*(self.root.cycleNum+1) - self.curStep))
                 upStat = [4,str(int(timeLeft)) + " sec"]
                 self.queue.put(upStat)
+                
+                self.nextRunStat = 1
 
                 self.root.mainWindow.focus_force()
 
