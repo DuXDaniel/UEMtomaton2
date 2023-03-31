@@ -1368,7 +1368,8 @@ class WidgetGallery():
     # browseSIS_Click: Browses for a saving directory for the selective in-situ images to save to
     def browseSIS_Click(self):
         imgDirectory = filedialog.askdirectory(title="Select the image directory")
-        self.SISFilepathEntry.config(text=imgDirectory)
+        self.SISFilepathEntry.delete(0, "end")
+        self.SISFilepathEntry.insert(0, imgDirectory)
 
     # selectiveInSituEnd_Click: sends a signal to end the selective in-situ script upon click. 
     def selectiveInSituEnd_Click(self):
@@ -1762,7 +1763,7 @@ class CamRunnerThread(threading.Thread):
                 curFileTot = self.root.camFilepathEntry.get().strip() + curFileName
                 ulgFileName = self.root.camFilepathEntry.get().strip().replace('/','\\') + "\\" + self.root.camFilebaseEntry.get().strip() + ".ulg"
 
-                upstat = [6,self.curStep,curFileName]
+                upStat = [6,self.curStep,curFileName]
                 self.queue.put(upStat)
                 
                 upStat = [0,'end',str(datetime.datetime.now())+": "+"Updating DM communication for step " + str(self.curStep + 1) + ".\r\n"]

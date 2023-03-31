@@ -33,6 +33,7 @@ childVals2 = stepHistoryTable.item(childVals)['values']
 childVals2[3] = 'C:/asdf/asdf/asdf/asdf/t345/nergnowerihg/34t/gra/fbn/adfs'
 childVals2[3] = childVals2[3].replace('/','\\')
 print(childVals2)
+childVals2[2] = 'asdfasdf'
 #stepHistoryTable.delete(childVals)
 #childVals[3] = "asdf"
 #stepHistoryTable.insert("",'end',values=["blahblahblah","asdf2","asdf2","asdf2"])

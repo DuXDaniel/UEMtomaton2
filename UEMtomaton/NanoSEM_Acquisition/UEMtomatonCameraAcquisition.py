@@ -6,7 +6,7 @@ from tkinter import simpledialog
 from pythonnet import load
 from ctypes import *
 
-SHUTTER_CTRL = CDLL("./SC10CommandLib_x64.dll")
+SHUTTER_CTRL = CDLL("./NanoSEM_Acquisition/SC10 C++ SDK/SC10CommandLib_x64.dll")
         
 def PressKey(keypress):
     ###### Press on keyboard the passed request
@@ -41,6 +41,11 @@ def main(argv):
 
     re_align_time = 600 # seconds before realigning the photoelectrons
 
+    timeout = 60 # seconds to attempt window focusing before a timeout command is sent
+
+    timeout_start = 0
+    timeout_cond = 0
+
     st = time.time()
     prev_statLine = "1"
     while (statLine != "-1"):
@@ -53,6 +58,7 @@ def main(argv):
                 st = time.time()
             hFoundWnd = FocusTheDesiredWnd()
             if(hFoundWnd != 0):
+                timeout_cond = 0
                 f = open("AcquisitionSettings.txt",'r')
                 filepath = f.readline()
                 filebase = f.readline()
@@ -120,10 +126,17 @@ def main(argv):
                     f.close()
                     prev_statLine = "1"
             else:
-                f = open("AcqStat.txt",'w')
-                f.write("-1")
-                f.close()
-                statLine = "-1"
+                if (timeout_cond == 0):
+                    timeout_cond = 1
+                    timeout_start = time.time()
+                    print('Timer has begun on timeout.')
+
+                if (time.time() - timeout_start > timeout):
+                    print('Failed to find microscope window.')
+                    f = open("AcqStat.txt",'w')
+                    f.write("-1")
+                    f.close()
+                    statLine = "-1"
 
         time.sleep(0.5)
 
